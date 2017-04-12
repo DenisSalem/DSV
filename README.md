@@ -2,6 +2,6 @@
 
 ## Damn Simple Vulkan
 
-Is a collection of Vulkan helper to achieve well and quick what's your intended for.
+Is a collection of Vulkan helpers to achieve well and quick what you have in mind.
 
-Highly experimental, poorly documented. Do not rely on it for production.
+Highly experimental, poorly documented. For now, do not rely on it for production.
