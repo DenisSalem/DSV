@@ -93,6 +93,7 @@ namespace DSV {
 	VulkanApplication::VulkanApplication(const char * applicationName, const char * engineName, uint32_t applicationVersion, uint32_t engineVersion) {
 	  	m_pInstance = nullptr;
 		m_pCallback = nullptr;
+		m_physicalDevices = std::vector<VkPhysicalDevice>(0);
 		m_instanceCreateInfo = {};
 		m_callbackCreateInfo = {};
 		m_appInfo = {};
@@ -110,6 +111,28 @@ namespace DSV {
 			DestroyDebugReportCallback(m_pInstance, m_pCallback, nullptr);
 		}
 		vkDestroyInstance(m_pInstance, nullptr);
+	}
+
+	void VulkanApplication::PrintPhysicalDevices() {
+	  	std::cout << DSV_MSG_AVAILABLE_INSTANCE_PHYSICAL_DEVICES;
+		for (const auto& device : m_physicalDevices) {
+			VkPhysicalDeviceProperties deviceProperties;
+			vkGetPhysicalDeviceProperties(device, &deviceProperties);
+			std::cout << "\t" << deviceProperties.deviceName << "\n";
+		}
+	}
+
+	void VulkanApplication::CreateLogicalDevice(int index, uint32_t queueCount) {
+		uint32_t queueFamilyCount = 0;
+		vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
+
+		std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
+		vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());
+	  	
+		VkDeviceQueueCreateInfo queueCreateInfo = {};
+		queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+		//queueCreateInfo.queueFamilyIndex = indices.graphicsFamily;
+		queueCreateInfo.queueCount = queueCount;
 	}
 
 	void VulkanApplication::SetupCallback(VkDebugReportFlagsEXT flags, PFN_vkDebugReportCallbackEXT debugCallback) {
@@ -147,5 +170,13 @@ namespace DSV {
 		if (result != VK_SUCCESS) {
     			throw Exception(result, DSV_MSG_FAILED_TO_CREATE_INSTANCE, m_appInfo.pApplicationName);
 		}
+
+		uint32_t deviceCount = 0;
+		vkEnumeratePhysicalDevices(m_pInstance, &deviceCount, nullptr);
+		if (deviceCount == 0) {
+			throw Exception(DSV_NO_PHYSICAL_DEVICES, DSV_MSG_NO_PHYSICAL_DEVICES);
+		}
+		m_physicalDevices.resize(deviceCount);
+		vkEnumeratePhysicalDevices(m_pInstance, &deviceCount, m_physicalDevices.data());
 	}
 }

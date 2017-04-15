@@ -9,8 +9,13 @@
 
 #define DSV_MSG_FAILED_TO_CREATE_INSTANCE "DSV: Failed to create instance!" 
 #define DSV_MSG_FAILED_TO_CREATE_CALLBACK "DSV: Failed to create callback!" 
+#define DSV_MSG_NO_PHYSICAL_DEVICES "DSV: No physical devices!"
+
 #define DSV_MSG_AVAILABLE_INSTANCE_LAYERS "DSV: Available instance layers:\n"
 #define DSV_MSG_AVAILABLE_INSTANCE_EXTENSIONS "DSV: Available instance extensions:\n"
+#define DSV_MSG_AVAILABLE_INSTANCE_PHYSICAL_DEVICES "DSV: Available instance physical devices:\n"
+
+#define DSV_NO_PHYSICAL_DEVICES	1
 
 #define DSV_TRACE { std::cerr << "DSV: "<< __FILE__ << ", " << __LINE__ << "\n"; } 
 
@@ -42,9 +47,10 @@ namespace DSV {
 			VulkanApplication(const char * applicationName, const char * engineName, uint32_t applicationVersion, uint32_t engineVersion);
 			~VulkanApplication();
 
+			void PrintPhysicalDevices();
+			void CreateLogicalDevice(int index, uint32_t queueCount);
 			void SetupCallback(VkDebugReportFlagsEXT flags, PFN_vkDebugReportCallbackEXT debugCallback);	
 			void InitVulkan(std::vector<const char *> requiredExtensions, std::vector<const char *> requiredLayers);
-			
 			virtual void Run() = 0;
 
 		protected:
@@ -53,6 +59,7 @@ namespace DSV {
 			VkInstanceCreateInfo m_instanceCreateInfo;
 			VkDebugReportCallbackCreateInfoEXT m_callbackCreateInfo;
 			VkDebugReportCallbackEXT m_pCallback;
+			std::vector<VkPhysicalDevice> m_physicalDevices;
 	};
 }
 

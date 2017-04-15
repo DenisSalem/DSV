@@ -7,11 +7,11 @@ const std::vector<const char *> requiredInstanceLayers {"VK_LAYER_LUNARG_standar
 class FirstVulkanApplication : public DSV::VulkanApplication {
 	public:
 		FirstVulkanApplication(const char * applicationName, const char * engineName, uint32_t applicationVersion, uint32_t engineVersion) : VulkanApplication(applicationName, engineName, applicationVersion, engineVersion) {
-			std::cout << "Vulkan Application Created...\n";
+			std::cout << "Vulkan application created.\n";
 		};
 		
 		~FirstVulkanApplication() {
-			std::cout << "Then destroyed.\n";
+			std::cout << "Vulkan applicaion destroyed.\n";
 		};
 		
 		void Run() {};
@@ -46,6 +46,8 @@ int main(int argc, char ** argv) {
 		if ( DSV::IsInstanceLayersAvailable(requiredInstanceLayers) && DSV::IsInstanceExtensionsAvailable(requiredInstanceExtensions)) {
 			app.InitVulkan(requiredInstanceExtensions,requiredInstanceLayers);
 			app.SetupCallback(VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT, debugCallback);
+			app.PrintPhysicalDevices();
+			app.CreateLogicalDevice(500,1);
 		}
 		else {
 			std::cout << "Required layers or extensions aren't supported... :(\n";
