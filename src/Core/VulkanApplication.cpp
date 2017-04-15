@@ -91,11 +91,16 @@ namespace DSV {
 	}
 
 	VulkanApplication::VulkanApplication(const char * applicationName, const char * engineName, uint32_t applicationVersion, uint32_t engineVersion) {
+	  	m_queuePriority = 0.0;
 	  	m_pInstance = nullptr;
+	  	m_pDevice = nullptr;
 		m_pCallback = nullptr;
 		m_physicalDevices = std::vector<VkPhysicalDevice>(0);
 		m_instanceCreateInfo = {};
+		m_queueCreateInfo = {};
+		m_deviceCreateInfo = {};
 		m_callbackCreateInfo = {};
+	  	m_deviceFeatures = {};
 		m_appInfo = {};
 		
 		m_appInfo.pApplicationName = applicationName;
@@ -106,10 +111,15 @@ namespace DSV {
 	}
 
 	VulkanApplication::~VulkanApplication() {
+	  	if (m_pDevice != nullptr) {
+			vkDestroyDevice(m_pDevice, nullptr);
+		}
+
 		auto DestroyDebugReportCallback = (PFN_vkDestroyDebugReportCallbackEXT) vkGetInstanceProcAddr(m_pInstance, "vkDestroyDebugReportCallbackEXT");
 		if (DestroyDebugReportCallback != nullptr && m_pCallback != nullptr) {
 			DestroyDebugReportCallback(m_pInstance, m_pCallback, nullptr);
 		}
+
 		vkDestroyInstance(m_pInstance, nullptr);
 	}
 
@@ -122,17 +132,37 @@ namespace DSV {
 		}
 	}
 
-	void VulkanApplication::CreateLogicalDevice(int index, uint32_t queueCount) {
-		uint32_t queueFamilyCount = 0;
-		vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
+	std::vector<VkPhysicalDevice> VulkanApplication::GetPhysicalDevices() {
+		return m_physicalDevices;
+	}
 
+	std::vector<VkQueueFamilyProperties> VulkanApplication::GetQueueFamilies(int physicalDeviceIndex) {
+		uint32_t queueFamilyCount = 0;
+		vkGetPhysicalDeviceQueueFamilyProperties(m_physicalDevices.at(physicalDeviceIndex), &queueFamilyCount, nullptr);
 		std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
-		vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());
-	  	
-		VkDeviceQueueCreateInfo queueCreateInfo = {};
-		queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-		//queueCreateInfo.queueFamilyIndex = indices.graphicsFamily;
-		queueCreateInfo.queueCount = queueCount;
+		vkGetPhysicalDeviceQueueFamilyProperties(m_physicalDevices.at(physicalDeviceIndex), &queueFamilyCount, queueFamilies.data());
+		return queueFamilies;
+	}
+
+	void VulkanApplication::CreateLogicalDevice(int physicalDeviceIndex, int queueFamilyIndex, uint32_t queueCount, float queuePriority) {
+	  	m_queuePriority = queuePriority;
+		m_queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+		m_queueCreateInfo.queueFamilyIndex = queueFamilyIndex;
+		m_queueCreateInfo.queueCount = queueCount;
+		m_queueCreateInfo.pQueuePriorities = &m_queuePriority;
+
+		m_deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+		m_deviceCreateInfo.pQueueCreateInfos = &m_queueCreateInfo;
+		m_deviceCreateInfo.queueCreateInfoCount = 1;
+		m_deviceCreateInfo.enabledLayerCount = m_requiredLayers.size();
+		m_deviceCreateInfo.ppEnabledLayerNames = m_requiredLayers.data();
+
+		auto result = vkCreateDevice(m_physicalDevices.at(physicalDeviceIndex), &m_deviceCreateInfo, nullptr, &m_pDevice);
+		if (result != VK_SUCCESS) {
+			throw Exception(result, DSV_MSG_FAILED_TO_CREATE_LOGICAL_DEVICE);
+		}
+		
+		
 	}
 
 	void VulkanApplication::SetupCallback(VkDebugReportFlagsEXT flags, PFN_vkDebugReportCallbackEXT debugCallback) {
@@ -152,6 +182,8 @@ namespace DSV {
 	}
 
 	void VulkanApplication::InitVulkan(std::vector<const char *> requiredExtensions, std::vector<const char *> requiredLayers) {
+	  	m_requiredExtensions = requiredExtensions;
+	  	m_requiredLayers = requiredLayers;
 		m_appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
 		m_appInfo.pNext = nullptr;
 		m_appInfo.apiVersion = VK_API_VERSION_1_0;

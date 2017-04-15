@@ -1,7 +1,14 @@
 #include "DSV/VulkanApplication.hpp"
 
+#define EXAMPLE_DEBUG
+
+#ifdef EXAMPLE_DEBUG
 const std::vector<const char *> requiredInstanceExtensions {"VK_EXT_debug_report"};
 const std::vector<const char *> requiredInstanceLayers {"VK_LAYER_LUNARG_standard_validation"};
+#else
+const std::vector<const char *> requiredInstanceExtensions {};
+const std::vector<const char *> requiredInstanceLayers {};
+#endif
 
 // Define custom DSV::VulkanApplication
 class FirstVulkanApplication : public DSV::VulkanApplication {
@@ -11,10 +18,12 @@ class FirstVulkanApplication : public DSV::VulkanApplication {
 		};
 		
 		~FirstVulkanApplication() {
-			std::cout << "Vulkan applicaion destroyed.\n";
+			std::cout << "Vulkan application destroyed.\n";
 		};
 		
 		void Run() {};
+
+	private:
 };
 
 // Define custom debug callback 
@@ -45,15 +54,27 @@ int main(int argc, char ** argv) {
 		// Initiating...
 		if ( DSV::IsInstanceLayersAvailable(requiredInstanceLayers) && DSV::IsInstanceExtensionsAvailable(requiredInstanceExtensions)) {
 			app.InitVulkan(requiredInstanceExtensions,requiredInstanceLayers);
-			app.SetupCallback(VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT, debugCallback);
+			#ifdef EXAMPLE_DEBUG
+				app.SetupCallback(VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT, debugCallback);
+			#endif
 			app.PrintPhysicalDevices();
-			app.CreateLogicalDevice(500,1);
+
+			// This is where you should do something with...
+			
+			app.GetPhysicalDevices();
+			int physicalDevice = 0;	// 0 is the default for the example. For your application you should choose wisely.
+			
+			app.GetQueueFamilies(physicalDevice);
+			int queueFamily = 0; // 0 is the default for the example. For your application you should choose wisely.
+
+			app.CreateLogicalDevice(physicalDevice,queueFamily,1,1.0);
 		}
 		else {
 			std::cout << "Required layers or extensions aren't supported... :(\n";
 		}
 	} catch (const DSV::Exception& e) {
         	std::cerr << "VK_RESULT: " << e.code << std::endl;
+        	std::cerr << e.msg << std::endl;
 		return EXIT_FAILURE;
 	}
 	
