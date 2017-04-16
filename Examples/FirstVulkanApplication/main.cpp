@@ -53,19 +53,21 @@ int main(int argc, char ** argv) {
 
 		// Initiating...
 		if ( DSV::IsInstanceLayersAvailable(requiredInstanceLayers) && DSV::IsInstanceExtensionsAvailable(requiredInstanceExtensions)) {
-			app.InitVulkan(requiredInstanceExtensions,requiredInstanceLayers);
 			#ifdef EXAMPLE_DEBUG
+				app.InitVulkan(requiredInstanceExtensions,requiredInstanceLayers);
 				app.SetupCallback(VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT, debugCallback);
+			#else
+				app.InitVulkan();
 			#endif
 			app.PrintPhysicalDevices();
 
 			// This is where you should do something with...
 			
 			app.GetPhysicalDevices();
-			int physicalDevice = 0;	// 0 is the default for the example. For your application you should choose wisely.
+			int physicalDevice = 0;	// 0 is the default for the example. For real application you should choose wisely.
 			
 			app.GetQueueFamilies(physicalDevice);
-			int queueFamily = 0; // 0 is the default for the example. For your application you should choose wisely.
+			int queueFamily = 0; // 0 is the default for the example. For real application you should choose wisely.
 
 			app.CreateLogicalDevice(physicalDevice,queueFamily,1,1.0);
 		}

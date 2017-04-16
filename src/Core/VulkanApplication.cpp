@@ -181,6 +181,10 @@ namespace DSV {
 		}
 	}
 
+	void VulkanApplication::InitVulkan() {
+		InitVulkan(std::vector<const char *>(0), std::vector<const char *>(0));
+	}
+
 	void VulkanApplication::InitVulkan(std::vector<const char *> requiredExtensions, std::vector<const char *> requiredLayers) {
 	  	m_requiredExtensions = requiredExtensions;
 	  	m_requiredLayers = requiredLayers;

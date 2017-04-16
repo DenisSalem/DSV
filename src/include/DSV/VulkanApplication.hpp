@@ -52,10 +52,12 @@ namespace DSV {
 			std::vector<VkPhysicalDevice> GetPhysicalDevices();
 
 			void PrintPhysicalDevices();
+			void AddQueue(int queueFamilyIndex);
 			void CreateLogicalDevice(int physicalDeviceIndex, int queueFamilyIndex, uint32_t queueCount, float queuePriority);
 			void SetupCallback(VkDebugReportFlagsEXT flags, PFN_vkDebugReportCallbackEXT debugCallback);	
 			void InitVulkan(std::vector<const char *> requiredExtensions, std::vector<const char *> requiredLayers);
-			
+			void InitVulkan();
+
 			virtual void Run() = 0;
 			
 		protected:
