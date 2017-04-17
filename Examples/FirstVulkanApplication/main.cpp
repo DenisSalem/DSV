@@ -68,14 +68,14 @@ int main(int argc, char ** argv) {
 			
 			app.GetQueueFamilies(physicalDevice);
 			int queueFamily = 0; // 0 is the default for the example. For real application you should choose wisely.
-
-			app.CreateLogicalDevice(physicalDevice,queueFamily,1,1.0);
+			app.AddQueueFamily(queueFamily,1,1.0);
+			
+			app.CreateLogicalDevice(physicalDevice);
 		}
 		else {
 			std::cout << "Required layers or extensions aren't supported... :(\n";
 		}
 	} catch (const DSV::Exception& e) {
-        	std::cerr << "VK_RESULT: " << e.code << std::endl;
         	std::cerr << e.msg << std::endl;
 		return EXIT_FAILURE;
 	}

@@ -11,12 +11,14 @@
 #define DSV_MSG_FAILED_TO_CREATE_CALLBACK "DSV: Failed to create callback!" 
 #define DSV_MSG_NO_PHYSICAL_DEVICES "DSV: No physical devices!"
 #define DSV_MSG_FAILED_TO_CREATE_LOGICAL_DEVICE "DSV: Failed to create logical device!"
+#define DSV_MSG_QUEUE_FAMILY_INDEX_DEFINED_TWICE "DSV: Queue family index defined twice!"
 
 #define DSV_MSG_AVAILABLE_INSTANCE_LAYERS "DSV: Available instance layers:\n"
 #define DSV_MSG_AVAILABLE_INSTANCE_EXTENSIONS "DSV: Available instance extensions:\n"
 #define DSV_MSG_AVAILABLE_INSTANCE_PHYSICAL_DEVICES "DSV: Available instance physical devices:\n"
 
 #define DSV_NO_PHYSICAL_DEVICES	1
+#define DSV_QUEUE_FAMILY_INDEX_DEFINED_TWICE 2
 
 #define DSV_TRACE { std::cerr << "DSV: "<< __FILE__ << ", " << __LINE__ << "\n"; } 
 
@@ -52,8 +54,9 @@ namespace DSV {
 			std::vector<VkPhysicalDevice> GetPhysicalDevices();
 
 			void PrintPhysicalDevices();
-			void AddQueue(int queueFamilyIndex);
-			void CreateLogicalDevice(int physicalDeviceIndex, int queueFamilyIndex, uint32_t queueCount, float queuePriority);
+			void AddQueueFamily(int32_t queueFamilyIndex, uint32_t const queueCount, float queuePriority);
+			void CreateLogicalDevice(int physicalDeviceIndex, const std::vector<const char*> requiredDeviceExtensions);
+			void CreateLogicalDevice(int physicalDeviceIndex);
 			void SetupCallback(VkDebugReportFlagsEXT flags, PFN_vkDebugReportCallbackEXT debugCallback);	
 			void InitVulkan(std::vector<const char *> requiredExtensions, std::vector<const char *> requiredLayers);
 			void InitVulkan();
@@ -63,12 +66,12 @@ namespace DSV {
 		protected:
 			std::vector<const char *> m_requiredExtensions;
 			std::vector<const char *> m_requiredLayers;
-			float m_queuePriority;
 			VkInstance m_pInstance;
 			VkDevice m_pDevice;
  			VkApplicationInfo m_appInfo;
 			VkInstanceCreateInfo m_instanceCreateInfo;
-			VkDeviceQueueCreateInfo m_queueCreateInfo;
+			std::vector<VkDeviceQueueCreateInfo> m_queueCreateInfos;
+			std::vector<float> m_queuePriorities;
 			VkDebugReportCallbackCreateInfoEXT m_callbackCreateInfo;
 			VkDeviceCreateInfo m_deviceCreateInfo;
 			VkDebugReportCallbackEXT m_pCallback;
