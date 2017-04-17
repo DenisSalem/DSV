@@ -25,15 +25,15 @@ namespace DSV {
 		return pProperties;
 	}
 
-	void PrintInstanceLayers(std::vector<VkLayerProperties> pProperties) {
-		std::cout << DSV_MSG_AVAILABLE_INSTANCE_LAYERS;
+	void PrintLayers(const char * header, std::vector<VkLayerProperties> pProperties) {
+		std::cout << header;
 		for (const auto& layerProperties : pProperties) {
 			std::cout << "\t" << layerProperties.layerName << "\n";
 		}
 	}
 
-	void PrintInstanceExtensions(std::vector<VkExtensionProperties> pProperties) {
-		std::cout << DSV_MSG_AVAILABLE_INSTANCE_EXTENSIONS;
+	void PrintExtensions(const char * header, std::vector<VkExtensionProperties> pProperties) {
+		std::cout << header;
 		for (const auto& layerProperties : pProperties) {
 			std::cout << "\t" << layerProperties.extensionName << "\n";
 		}
@@ -96,7 +96,7 @@ namespace DSV {
 		m_pCallback = nullptr;
 		m_physicalDevices = std::vector<VkPhysicalDevice>(0);
 		m_queueCreateInfos = std::vector<VkDeviceQueueCreateInfo>(0);
-		m_queuePriorities = std::vector<float>(0);
+		m_queuePriorities = std::vector<std::vector<float>>(0);
 		m_instanceCreateInfo = {};
 		m_deviceCreateInfo = {};
 		m_callbackCreateInfo = {};
@@ -144,26 +144,37 @@ namespace DSV {
 		return queueFamilies;
 	}
 
-	void VulkanApplication::AddQueueFamily(int32_t queueFamilyIndex, uint32_t const queueCount, float queuePriority) {
+	void VulkanApplication::AddQueueFamily(int32_t queueFamilyIndex, uint32_t const queueCount, std::vector<float> queuePriorities) {
 		for (const auto& queueCreateInfo :  m_queueCreateInfos) {
 			if (queueFamilyIndex == queueCreateInfo.queueFamilyIndex) {
 				throw Exception(DSV_QUEUE_FAMILY_INDEX_DEFINED_TWICE, DSV_MSG_QUEUE_FAMILY_INDEX_DEFINED_TWICE);
 			}
 		}
 		
-		m_queuePriorities.push_back(queuePriority);
+		m_queuePriorities.push_back(queuePriorities);
 
 		VkDeviceQueueCreateInfo queueCreateInfo = {};
 	  	
 		queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
 		queueCreateInfo.queueFamilyIndex = queueFamilyIndex;
 		queueCreateInfo.queueCount = queueCount;
-		queueCreateInfo.pQueuePriorities = &m_queuePriorities.back();
+		queueCreateInfo.pQueuePriorities = m_queuePriorities.back().data();
 
 		m_queueCreateInfos.push_back(queueCreateInfo);
 	}
 
-	
+	std::vector<VkExtensionProperties> VulkanApplication::GetDeviceExtensions(int physicalDeviceIndex, const char * pLayerName) {
+		uint32_t propertiesCount = 0;
+		std::vector<VkExtensionProperties> pProperties;
+		vkEnumerateDeviceExtensionProperties(m_physicalDevices.at(physicalDeviceIndex), pLayerName, &propertiesCount, nullptr);
+		if (propertiesCount != 0) {
+		  	pProperties.resize(propertiesCount);
+			vkEnumerateDeviceExtensionProperties(m_physicalDevices.at(physicalDeviceIndex), pLayerName, &propertiesCount, pProperties.data());
+
+		}
+		return pProperties;
+		
+	}
 
 	void VulkanApplication::CreateLogicalDevice(int physicalDeviceIndex) {
 		CreateLogicalDevice(physicalDeviceIndex, std::vector<const char*>(0));
@@ -171,6 +182,7 @@ namespace DSV {
 
 	void VulkanApplication::CreateLogicalDevice(int physicalDeviceIndex, const std::vector<const char*> requiredDeviceExtensions) {
 		m_deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+		m_deviceCreateInfo.pEnabledFeatures = &m_deviceFeatures;
 		m_deviceCreateInfo.pQueueCreateInfos = m_queueCreateInfos.data();
 		m_deviceCreateInfo.queueCreateInfoCount = m_queueCreateInfos.size();
 		m_deviceCreateInfo.enabledLayerCount = 0;

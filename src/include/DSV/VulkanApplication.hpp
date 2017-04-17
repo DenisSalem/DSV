@@ -15,12 +15,13 @@
 
 #define DSV_MSG_AVAILABLE_INSTANCE_LAYERS "DSV: Available instance layers:\n"
 #define DSV_MSG_AVAILABLE_INSTANCE_EXTENSIONS "DSV: Available instance extensions:\n"
-#define DSV_MSG_AVAILABLE_INSTANCE_PHYSICAL_DEVICES "DSV: Available instance physical devices:\n"
+#define DSV_MSG_AVAILABLE_DEVICE_EXTENSIONS "DSV: Available device extensions:\n"
+#define DSV_MSG_AVAILABLE_INSTANCE_PHYSICAL_DEVICES "DSV: Available physical devices:\n"
 
 #define DSV_NO_PHYSICAL_DEVICES	1
 #define DSV_QUEUE_FAMILY_INDEX_DEFINED_TWICE 2
 
-#define DSV_TRACE { std::cerr << "DSV: "<< __FILE__ << ", " << __LINE__ << "\n"; } 
+#define DSV_TRACE { std::cerr << "DSV_TRACE: "<< __FILE__ << ", " << __LINE__ << "\n"; } 
 
 namespace DSV {
 	
@@ -28,8 +29,8 @@ namespace DSV {
 	std::vector<VkLayerProperties> GetInstanceLayers();
 	std::vector<VkExtensionProperties> GetInstanceExtensions(const char * pLayerName);
 	
-	void PrintInstanceLayers(std::vector<VkLayerProperties> pProperties);
-	void PrintInstanceExtensions(std::vector<VkExtensionProperties> pProperties);
+	void PrintLayers(const char * header, std::vector<VkLayerProperties> pProperties);
+	void PrintExtensions(const char * header, std::vector<VkExtensionProperties> pProperties);
 	
 	bool IsInstanceLayersAvailable(std::vector<const char *> required);
 	bool IsInstanceExtensionsAvailable(std::vector<const char *> required);
@@ -52,9 +53,10 @@ namespace DSV {
 			
 			std::vector<VkQueueFamilyProperties> GetQueueFamilies(int physicalDeviceIndex);
 			std::vector<VkPhysicalDevice> GetPhysicalDevices();
-
+			std::vector<VkExtensionProperties> GetDeviceExtensions(int physicalDeviceIndex, const char * pLayerName);
+			
 			void PrintPhysicalDevices();
-			void AddQueueFamily(int32_t queueFamilyIndex, uint32_t const queueCount, float queuePriority);
+			void AddQueueFamily(int32_t queueFamilyIndex, uint32_t const queueCount, std::vector<float> queuePriorities);
 			void CreateLogicalDevice(int physicalDeviceIndex, const std::vector<const char*> requiredDeviceExtensions);
 			void CreateLogicalDevice(int physicalDeviceIndex);
 			void SetupCallback(VkDebugReportFlagsEXT flags, PFN_vkDebugReportCallbackEXT debugCallback);	
@@ -71,7 +73,7 @@ namespace DSV {
  			VkApplicationInfo m_appInfo;
 			VkInstanceCreateInfo m_instanceCreateInfo;
 			std::vector<VkDeviceQueueCreateInfo> m_queueCreateInfos;
-			std::vector<float> m_queuePriorities;
+			std::vector< std::vector<float> > m_queuePriorities;
 			VkDebugReportCallbackCreateInfoEXT m_callbackCreateInfo;
 			VkDeviceCreateInfo m_deviceCreateInfo;
 			VkDebugReportCallbackEXT m_pCallback;

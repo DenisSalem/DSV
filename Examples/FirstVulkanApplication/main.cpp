@@ -48,8 +48,8 @@ int main(int argc, char ** argv) {
 		FirstVulkanApplication app("FirstVulkanApplication" , "None", VK_MAKE_VERSION(0,0,0), VK_MAKE_VERSION(0,0,0));
 		
 		// Printing out layers and extensions capabilities...
-		DSV::PrintInstanceLayers(DSV::GetInstanceLayers());
-		DSV::PrintInstanceExtensions(DSV::GetInstanceExtensions(nullptr));
+		DSV::PrintLayers(DSV_MSG_AVAILABLE_INSTANCE_LAYERS, DSV::GetInstanceLayers());
+		DSV::PrintExtensions(DSV_MSG_AVAILABLE_INSTANCE_EXTENSIONS, DSV::GetInstanceExtensions(nullptr));
 
 		// Initiating...
 		if ( DSV::IsInstanceLayersAvailable(requiredInstanceLayers) && DSV::IsInstanceExtensionsAvailable(requiredInstanceExtensions)) {
@@ -65,10 +65,11 @@ int main(int argc, char ** argv) {
 			
 			app.GetPhysicalDevices();
 			int physicalDevice = 0;	// 0 is the default for the example. For real application you should choose wisely.
+			DSV::PrintExtensions(DSV_MSG_AVAILABLE_DEVICE_EXTENSIONS, app.GetDeviceExtensions(physicalDevice, nullptr));
 			
 			app.GetQueueFamilies(physicalDevice);
 			int queueFamily = 0; // 0 is the default for the example. For real application you should choose wisely.
-			app.AddQueueFamily(queueFamily,1,1.0);
+			app.AddQueueFamily(queueFamily,3,std::vector<float>({0.70,0.15,0.15}));
 			
 			app.CreateLogicalDevice(physicalDevice);
 		}
