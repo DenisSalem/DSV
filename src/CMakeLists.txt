@@ -2,7 +2,7 @@ cmake_minimum_required (VERSION 3.7)
 
 project(DSV)
 
-set(SRC_FILES "Core/VulkanApplication.cpp")
+set(SRC_FILES "Core/VulkanApplication.cpp" "Core/GraphicVulkanApplication")
 
 set(EXTRA_DEPENDENCIES "-lvulkan")
 

@@ -9,7 +9,7 @@ else()
 	message( FATAL_ERROR "DSV_PATH isn't defined. Call cmake with -DDSV_PATH:STRING=path/to/DSV")
 endif()
 
-set(DEPENDENCIES "-lvulkan")
+set(DEPENDENCIES "-lvulkan -lglfw")
 
 add_executable(${PROJECT_NAME} main.cpp)
 

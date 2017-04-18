@@ -144,6 +144,11 @@ namespace DSV {
 		return queueFamilies;
 	}
 
+	VkInstance VulkanApplication::GetInstance() {
+		return m_pInstance;
+	}
+
+
 	void VulkanApplication::AddQueueFamily(int32_t queueFamilyIndex, uint32_t const queueCount, std::vector<float> queuePriorities) {
 		for (const auto& queueCreateInfo :  m_queueCreateInfos) {
 			if (queueFamilyIndex == queueCreateInfo.queueFamilyIndex) {

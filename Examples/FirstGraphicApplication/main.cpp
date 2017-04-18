@@ -1,24 +1,25 @@
-#include "DSV/VulkanApplication.hpp"
+#include "DSV/GraphicVulkanApplication.hpp"
+#include <GLFW/glfw3.h>
 
 #define EXAMPLE_DEBUG
 
 #ifdef EXAMPLE_DEBUG
-const std::vector<const char *> requiredInstanceExtensions {"VK_EXT_debug_report"};
+std::vector<const char *> requiredInstanceExtensions {"VK_EXT_debug_report"};
 const std::vector<const char *> requiredInstanceLayers {"VK_LAYER_LUNARG_standard_validation"};
 #else
-const std::vector<const char *> requiredInstanceExtensions {};
+std::vector<const char *> requiredInstanceExtensions {};
 const std::vector<const char *> requiredInstanceLayers {};
 #endif
 
 // Define custom DSV::VulkanApplication
-class FirstVulkanApplication : public DSV::VulkanApplication {
+class FirstGraphicVulkanApplication : public DSV::GraphicVulkanApplication {
 	public:
-		FirstVulkanApplication(const char * applicationName, const char * engineName, uint32_t applicationVersion, uint32_t engineVersion) : VulkanApplication(applicationName, engineName, applicationVersion, engineVersion) {
-			std::cout << "Vulkan application created.\n";
+		FirstGraphicVulkanApplication(const char * applicationName, const char * engineName, uint32_t applicationVersion, uint32_t engineVersion) : GraphicVulkanApplication(applicationName, engineName, applicationVersion, engineVersion) {
+			std::cout << "Graphic vulkan application created.\n";
 		};
 		
-		~FirstVulkanApplication() {
-			std::cout << "Vulkan application destroyed.\n";
+		~FirstGraphicVulkanApplication() {
+			std::cout << "Graphic Vulkan application destroyed.\n";
 		};
 };
 
@@ -40,12 +41,26 @@ VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
 
 int main(int argc, char ** argv) {
 	try {
+		glfwInit();
+		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+		glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+		auto window = glfwCreateWindow(640, 480, "First graphic vulkan application", nullptr, nullptr);
+
 	  	// Instancing but not initiating yet...
-		FirstVulkanApplication app("FirstVulkanApplication" , "None", VK_MAKE_VERSION(0,0,0), VK_MAKE_VERSION(0,0,0));
+		FirstGraphicVulkanApplication app("FirstVulkanApplication" , "None", VK_MAKE_VERSION(0,0,0), VK_MAKE_VERSION(0,0,0));
 		
 		// Printing out layers and extensions capabilities...
 		DSV::PrintLayers(DSV_MSG_AVAILABLE_INSTANCE_LAYERS, DSV::GetInstanceLayers());
 		DSV::PrintExtensions(DSV_MSG_AVAILABLE_INSTANCE_EXTENSIONS, DSV::GetInstanceExtensions(nullptr));
+
+		unsigned int glfwExtensionCount = 0;
+		const char** glfwExtensions;
+
+		glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+
+		for (int i=0; i<glfwExtensionCount;i++) {
+			requiredInstanceExtensions.push_back(glfwExtensions[i]);
+		}
 
 		// Initiating...
 		if ( DSV::IsInstanceLayersAvailable(requiredInstanceLayers) && DSV::IsInstanceExtensionsAvailable(requiredInstanceExtensions)) {
@@ -72,6 +87,11 @@ int main(int argc, char ** argv) {
 		else {
 			std::cout << "Required layers or extensions aren't supported... :(\n";
 		}
+		while (!glfwWindowShouldClose(window)) {
+			glfwPollEvents();
+		}
+    		glfwDestroyWindow(window);
+    		glfwTerminate();
 	} catch (const DSV::Exception& e) {
         	std::cerr << e.msg << std::endl;
 		return EXIT_FAILURE;

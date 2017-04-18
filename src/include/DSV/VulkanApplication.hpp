@@ -47,7 +47,7 @@ namespace DSV {
 
 	class VulkanApplication {
 		public:
-			VulkanApplication() : VulkanApplication("Generic DSV Vulkan Application","No Engine",VK_MAKE_VERSION(1,0,0),VK_MAKE_VERSION(1,0,0)) {}
+			VulkanApplication() : VulkanApplication("Generic DSV Vulkan Application","No Engine",VK_MAKE_VERSION(1,0,0),VK_MAKE_VERSION(1,0,0)) {};
 			VulkanApplication(const char * applicationName, const char * engineName, uint32_t applicationVersion, uint32_t engineVersion);
 			~VulkanApplication();
 			
@@ -62,6 +62,8 @@ namespace DSV {
 			void SetupCallback(VkDebugReportFlagsEXT flags, PFN_vkDebugReportCallbackEXT debugCallback);	
 			void InitVulkan(std::vector<const char *> requiredExtensions, std::vector<const char *> requiredLayers);
 			void InitVulkan();
+
+			VkInstance GetInstance();
 
 			virtual void Run() = 0;
 			
