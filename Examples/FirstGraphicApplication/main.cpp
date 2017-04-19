@@ -11,6 +11,8 @@ std::vector<const char *> requiredInstanceExtensions {};
 const std::vector<const char *> requiredInstanceLayers {};
 #endif
 
+const std::vector<const char *> requiredDeviceExtensions {"VK_KHR_swapchain"};
+
 // Define custom DSV::VulkanApplication
 class FirstGraphicVulkanApplication : public DSV::GraphicVulkanApplication {
 	public:
@@ -19,8 +21,18 @@ class FirstGraphicVulkanApplication : public DSV::GraphicVulkanApplication {
 		};
 		
 		~FirstGraphicVulkanApplication() {
+		  	if (m_pSurface != nullptr) {
+				vkDestroySurfaceKHR(m_pInstance, m_pSurface, nullptr);
+			}
 			std::cout << "Graphic Vulkan application destroyed.\n";
 		};
+
+		void CreateSurface(GLFWwindow * window) {
+			VkResult result = glfwCreateWindowSurface(m_pInstance, window, nullptr, &m_pSurface);
+			if (result != VK_SUCCESS) {
+				throw DSV::Exception(result, DSV_MSG_FAILED_TO_CREATE_WINDOW_SURFACE);
+			}
+		}
 };
 
 // Define custom debug callback 
@@ -82,7 +94,12 @@ int main(int argc, char ** argv) {
 			int queueFamily = 0; // 0 is the default for the example. For real application you should choose wisely.
 			app.AddQueueFamily(queueFamily,3,std::vector<float>({0.70,0.15,0.15}));
 			
-			app.CreateLogicalDevice(physicalDevice);
+			app.CreateLogicalDevice(physicalDevice,requiredDeviceExtensions);
+
+			app.CreateSurface(window);
+
+			VkSurfaceCapabilitiesKHR surfaceCapabilities = app.GetSurfaceCapabilities(physicalDevice);
+			std::vector<VkSurfaceFormatKHR> formats = app.GetSurfaceFormats(physicalDevice);
 		}
 		else {
 			std::cout << "Required layers or extensions aren't supported... :(\n";

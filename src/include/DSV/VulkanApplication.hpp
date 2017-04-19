@@ -64,8 +64,6 @@ namespace DSV {
 			void InitVulkan();
 
 			VkInstance GetInstance();
-
-			virtual void Run() = 0;
 			
 		protected:
 			std::vector<const char *> m_requiredExtensions;
