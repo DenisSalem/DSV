@@ -1,6 +1,6 @@
 cmake_minimum_required (VERSION 3.7)
 
-project(FirstVulkanApplication)
+project(FirstGraphicVulkanApplication)
 
 if (DEFINED DSV_PATH)
   add_subdirectory("${DSV_PATH}/src" DSV)

@@ -4,6 +4,10 @@
 #define EXAMPLE_DEBUG
 
 #ifdef EXAMPLE_DEBUG
+
+#define WINDOW_WIDTH  640
+#define WINDOW_HEIGHT 480
+
 std::vector<const char *> requiredInstanceExtensions {"VK_EXT_debug_report"};
 const std::vector<const char *> requiredInstanceLayers {"VK_LAYER_LUNARG_standard_validation"};
 #else
@@ -21,9 +25,6 @@ class FirstGraphicVulkanApplication : public DSV::GraphicVulkanApplication {
 		};
 		
 		~FirstGraphicVulkanApplication() {
-		  	if (m_pSurface != nullptr) {
-				vkDestroySurfaceKHR(m_pInstance, m_pSurface, nullptr);
-			}
 			std::cout << "Graphic Vulkan application destroyed.\n";
 		};
 
@@ -56,7 +57,7 @@ int main(int argc, char ** argv) {
 		glfwInit();
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-		auto window = glfwCreateWindow(640, 480, "First graphic vulkan application", nullptr, nullptr);
+		auto window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "First graphic vulkan application", nullptr, nullptr);
 
 	  	// Instancing but not initiating yet...
 		FirstGraphicVulkanApplication app("FirstVulkanApplication" , "None", VK_MAKE_VERSION(0,0,0), VK_MAKE_VERSION(0,0,0));
@@ -86,7 +87,7 @@ int main(int argc, char ** argv) {
 
 			// This is where you should do something with...
 			
-			app.GetPhysicalDevices();
+			std::vector<VkPhysicalDevice> physicalDevices = app.GetPhysicalDevices();
 			int physicalDevice = 0;	// 0 is the default for the example. For real application you should choose wisely.
 			DSV::PrintExtensions(DSV_MSG_AVAILABLE_DEVICE_EXTENSIONS, app.GetDeviceExtensions(physicalDevice, nullptr));
 			
@@ -98,8 +99,21 @@ int main(int argc, char ** argv) {
 
 			app.CreateSurface(window);
 
+			VkBool32 pSupported;
+			vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevices.at(physicalDevice), queueFamily, app.GetSurface(), &pSupported);
+
+			if (pSupported) {
+				std::cout << "Queue family suport presentation! :)\n";
+			}
+
 			VkSurfaceCapabilitiesKHR surfaceCapabilities = app.GetSurfaceCapabilities(physicalDevice);
-			std::vector<VkSurfaceFormatKHR> formats = app.GetSurfaceFormats(physicalDevice);
+			VkSurfaceFormatKHR surfaceFormat = DSV::GetSurfaceFormat(app.GetSurfaceFormats(physicalDevice), VK_FORMAT_B8G8R8A8_SRGB);
+			VkPresentModeKHR surfacePresentMode = DSV::GetSurfacePresentMode(app.GetSurfacePresentModes(physicalDevice), VK_PRESENT_MODE_IMMEDIATE_KHR);
+			VkExtent2D extent = {WINDOW_WIDTH, WINDOW_HEIGHT};
+
+			app.DefaultSwapChainSetup(surfaceCapabilities, surfaceFormat, surfacePresentMode, extent);
+			// Before actual Swapchain creation one might want to tune a little bit more m_SwapChaineCreateInfo by implementing some setters.
+			app.CreateSwapChain();
 		}
 		else {
 			std::cout << "Required layers or extensions aren't supported... :(\n";
