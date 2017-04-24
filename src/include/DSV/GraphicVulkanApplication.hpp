@@ -28,7 +28,8 @@ namespace DSV {
 			VkSurfaceKHR GetSurface();
 
 			void DefaultSwapChainSetup(VkSurfaceCapabilitiesKHR capabilities, VkSurfaceFormatKHR format, VkPresentModeKHR presentMode, VkExtent2D extent);
-			void CreateSwapChain();
+			void DefaultImageViewsSetup();
+                        void CreateSwapChain();
 
 		protected:
 			VkSwapchainCreateInfoKHR m_swapChainCreateInfo;
@@ -37,6 +38,8 @@ namespace DSV {
 			VkPresentModeKHR m_surfacePresentMode;
 			VkExtent2D m_surfaceExtent;
 			VkSwapchainKHR m_pSwapChain;
+                        std::vector<VkImage> m_swapChaineImages;
+                        std::vector<VkImageView> m_imageViews;
 	};
 }
 

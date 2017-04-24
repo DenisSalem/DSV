@@ -1,4 +1,4 @@
-#include "DSV/GraphicVulkanApplication.hpp"
+²#include "DSV/GraphicVulkanApplication.hpp"
 
 namespace DSV {
 	VkSurfaceFormatKHR GetSurfaceFormat(std::vector<VkSurfaceFormatKHR> formats, VkFormat requiredFormat) {
@@ -22,6 +22,8 @@ namespace DSV {
 	GraphicVulkanApplication::GraphicVulkanApplication(const char * applicationName, const char * engineName, uint32_t applicationVersion, uint32_t engineVersion) : VulkanApplication(applicationName,engineName,applicationVersion,engineVersion) {
 		m_pSwapChain = nullptr;
 		m_pSurface = nullptr;
+                m_pImageViews = std::vector<VkImage>(0);
+                m_swapChainImages = std::vector<VkImageView>(0);
 		m_surfaceFormat = {};
 		m_surfacePresentMode = {};
 		m_surfaceExtent = {};
@@ -107,7 +109,18 @@ namespace DSV {
 		if (result != VK_SUCCESS) {
 			throw(result, DSV_MSG_FAILED_TO_CREATE_SWAPCHAIN);
 		}
+
+                int imageCount = 0;
+                vkGetSwapchainImagesKHR(m_pDevice, m_pSwapChain, &imageCount, nullptr);
+                m_swapChainImages.resize(imageCount);
+                vkGetSwapchainImagesKHR(m_pDevice, m_pSwapChain, &imageCount, m_swapChainImages.data());
+                m_imageViews.resize(m_swapChainImages.size, nulltr);
 	}
+
+        void GraphicVulkanApplication::DefaultImageViewsSetup() {
+                for(uint32_t i = 0; i < m_){
+                }
+        }
 
 	VkSurfaceKHR GraphicVulkanApplication::GetSurface() {
 		return m_pSurface;
