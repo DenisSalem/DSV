@@ -1,4 +1,4 @@
-²#include "DSV/GraphicVulkanApplication.hpp"
+#include "DSV/GraphicVulkanApplication.hpp"
 
 namespace DSV {
 	VkSurfaceFormatKHR GetSurfaceFormat(std::vector<VkSurfaceFormatKHR> formats, VkFormat requiredFormat) {
@@ -22,15 +22,20 @@ namespace DSV {
 	GraphicVulkanApplication::GraphicVulkanApplication(const char * applicationName, const char * engineName, uint32_t applicationVersion, uint32_t engineVersion) : VulkanApplication(applicationName,engineName,applicationVersion,engineVersion) {
 		m_pSwapChain = nullptr;
 		m_pSurface = nullptr;
-                m_pImageViews = std::vector<VkImage>(0);
-                m_swapChainImages = std::vector<VkImageView>(0);
+                m_pImageViews = std::vector<VkImageView>(0);
+                m_pSwapChainImages = std::vector<VkImage>(0);
 		m_surfaceFormat = {};
 		m_surfacePresentMode = {};
 		m_surfaceExtent = {};
 		m_swapChainCreateInfo = {};
+		m_imageViewsCreateInfo = std::vector<VkImageViewCreateInfo>(0);
 	};
 
 	GraphicVulkanApplication::~GraphicVulkanApplication() {
+		for (int i = 0; i < m_pImageViews.size(); i++) {
+			vkDestroyImageView(m_pDevice, m_pImageViews[i], nullptr);
+		}
+
 		if (m_pSwapChain != nullptr) {
 			vkDestroySwapchainKHR(m_pDevice, m_pSwapChain,nullptr);
 		}
@@ -110,17 +115,42 @@ namespace DSV {
 			throw(result, DSV_MSG_FAILED_TO_CREATE_SWAPCHAIN);
 		}
 
-                int imageCount = 0;
+                uint32_t imageCount = 0;
                 vkGetSwapchainImagesKHR(m_pDevice, m_pSwapChain, &imageCount, nullptr);
-                m_swapChainImages.resize(imageCount);
-                vkGetSwapchainImagesKHR(m_pDevice, m_pSwapChain, &imageCount, m_swapChainImages.data());
-                m_imageViews.resize(m_swapChainImages.size, nulltr);
+                m_pSwapChainImages.resize(imageCount);
+		m_imageViewsCreateInfo.resize(imageCount);
+                vkGetSwapchainImagesKHR(m_pDevice, m_pSwapChain, &imageCount, m_pSwapChainImages.data());
+                m_pImageViews.resize(m_pSwapChainImages.size(), nullptr);
 	}
 
         void GraphicVulkanApplication::DefaultImageViewsSetup() {
-                for(uint32_t i = 0; i < m_){
+                for(uint32_t i = 0; i < m_pImageViews.size(); i++) {
+			m_imageViewsCreateInfo[i] = {};
+			m_imageViewsCreateInfo[i].sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+			m_imageViewsCreateInfo[i].image = m_pSwapChainImages[i];
+			m_imageViewsCreateInfo[i].viewType = VK_IMAGE_VIEW_TYPE_2D;
+			m_imageViewsCreateInfo[i].format = m_surfaceFormat.format;
+			m_imageViewsCreateInfo[i].components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
+			m_imageViewsCreateInfo[i].components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
+			m_imageViewsCreateInfo[i].components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
+			m_imageViewsCreateInfo[i].components.a = VK_COMPONENT_SWIZZLE_IDENTITY; 
+			m_imageViewsCreateInfo[i].subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+			m_imageViewsCreateInfo[i].subresourceRange.baseMipLevel = 0;
+			m_imageViewsCreateInfo[i].subresourceRange.levelCount = 1;
+			m_imageViewsCreateInfo[i].subresourceRange.baseArrayLayer = 0;
+			m_imageViewsCreateInfo[i].subresourceRange.layerCount = 1;	
                 }
         }
+
+	void GraphicVulkanApplication::CreateImageViews() {
+		VkResult result;
+                for(uint32_t i = 0; i < m_pImageViews.size(); i++) {
+			result = vkCreateImageView(m_pDevice, &m_imageViewsCreateInfo[i], nullptr, &m_pImageViews[i]);
+			if (result != VK_SUCCESS) {
+				throw Exception(result, DSV_MSG_FAILED_TO_CREATE_IMAGE_VIEW);
+			}
+		}
+	}
 
 	VkSurfaceKHR GraphicVulkanApplication::GetSurface() {
 		return m_pSurface;

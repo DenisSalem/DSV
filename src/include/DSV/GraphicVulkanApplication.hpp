@@ -6,6 +6,7 @@
 #define DSV_MSG_FAILED_TO_CREATE_WINDOW_SURFACE "DSV: Failed to create window surface!"
 #define DSV_MSG_CANNOT_RETRIEVE_SURFACE_CAPABILITIES "DSV: Cannot retrieve surface capabilities!"
 #define DSV_MSG_FAILED_TO_CREATE_SWAPCHAIN "DSV: Failed to create swapchain!"
+#define DSV_MSG_FAILED_TO_CREATE_IMAGE_VIEW "DSV: Failed to create image view!"
 #define DSV_MSG_UNKNOWN_FORMAT "DSV: Unknown format!"
 #define DSV_MSG_UNKNOWN_PRESENT_MODE "DSV: Unknown present mode!"
 
@@ -30,6 +31,7 @@ namespace DSV {
 			void DefaultSwapChainSetup(VkSurfaceCapabilitiesKHR capabilities, VkSurfaceFormatKHR format, VkPresentModeKHR presentMode, VkExtent2D extent);
 			void DefaultImageViewsSetup();
                         void CreateSwapChain();
+			void CreateImageViews();
 
 		protected:
 			VkSwapchainCreateInfoKHR m_swapChainCreateInfo;
@@ -38,8 +40,9 @@ namespace DSV {
 			VkPresentModeKHR m_surfacePresentMode;
 			VkExtent2D m_surfaceExtent;
 			VkSwapchainKHR m_pSwapChain;
-                        std::vector<VkImage> m_swapChaineImages;
-                        std::vector<VkImageView> m_imageViews;
+                        std::vector<VkImage> m_pSwapChainImages;
+                        std::vector<VkImageView> m_pImageViews;
+			std::vector<VkImageViewCreateInfo> m_imageViewsCreateInfo;
 	};
 }
 

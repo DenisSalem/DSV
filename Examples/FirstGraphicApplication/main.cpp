@@ -114,6 +114,8 @@ int main(int argc, char ** argv) {
 			app.DefaultSwapChainSetup(surfaceCapabilities, surfaceFormat, surfacePresentMode, extent);
 			// Before actual Swapchain creation one might want to tune a little bit more m_SwapChaineCreateInfo by implementing some setters.
 			app.CreateSwapChain();
+			app.DefaultImageViewsSetup();
+			app.CreateImageViews();
 		}
 		else {
 			std::cout << "Required layers or extensions aren't supported... :(\n";
