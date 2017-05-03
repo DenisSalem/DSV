@@ -22,8 +22,12 @@ namespace DSV {
 	GraphicVulkanApplication::GraphicVulkanApplication(const char * applicationName, const char * engineName, uint32_t applicationVersion, uint32_t engineVersion) : VulkanApplication(applicationName,engineName,applicationVersion,engineVersion) {
 		m_pSwapChain = nullptr;
 		m_pSurface = nullptr;
-                m_pImageViews = std::vector<VkImageView>(0);
+                m_pVertexShader = nullptr;
+                m_pFragmentShader = nullptr;
+		m_pImageViews = std::vector<VkImageView>(0);
                 m_pSwapChainImages = std::vector<VkImage>(0);
+		m_vertexShader = std::vector<char>(0);
+		m_fragmentShader = std::vector<char>(0);
 		m_surfaceFormat = {};
 		m_surfacePresentMode = {};
 		m_surfaceExtent = {};
@@ -140,6 +144,53 @@ namespace DSV {
 			m_imageViewsCreateInfo[i].subresourceRange.baseArrayLayer = 0;
 			m_imageViewsCreateInfo[i].subresourceRange.layerCount = 1;	
                 }
+        }
+
+	void GraphicVulkanApplication::LoadShaders(const char * vertexShaderFilename, const char * fragmentShaderFilename) {
+		std::ifstream vertexShader(vertexShaderFilename, std::ios::ate | std::ios::binary); 
+		std::ifstream fragmentShader(fragmentShaderFilename, std::ios::ate | std::ios::binary);
+
+		if(!vertexShader.is_open()) {
+			throw(DSV_FAILED_TO_LOAD_VERTEX_SHADER, DSV_MSG_FAILED_TO_LOAD_VERTEX_SHADER);
+		}
+		if(!fragmentShader.is_open()) {
+			throw(DSV_FAILED_TO_LOAD_VERTEX_SHADER, DSV_MSG_FAILED_TO_LOAD_VERTEX_SHADER);
+		}
+
+		size_t vertexShaderSize = (size_t) vertexShader.tellg();
+		size_t fragmentShaderSize = (size_t) fragmentShader.tellg();
+
+		vertexShader.seekg(0);
+		fragmentShader.seekg(0);
+
+		m_vertexShader.resize(vertexShaderSize);
+		m_fragmentShader.resize(fragmentShaderSize);
+
+		vertexShader.read(m_vertexShader.data(), vertexShaderSize);
+		fragmentShader.read(m_fragmentShader.data(), fragmentShaderSize);
+		vertexShader.close();
+		fragmentShader.close();
+	}
+	void GraphicVulkanApplication::CreateVertexShader() {
+		CreateShader(m_vertexShader);
+	}
+
+	void GraphicVulkanApplication::CreateFragmentShader() {
+		CreateShader(m_fragmentShader);
+	}
+
+	void GraphicVulkanApplication::CreateShader(std::vector<char> shader) {
+		VkShaderModuleCreateInfo shaderCreateInfo = {};
+		shaderCreateInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+		shaderCreateInfo.codeSize shader.size();
+		std::vector<uint32_t> aligned(shader.size() / sizeof(uint32_t) + 1);
+		memcpy(aligned.data(), shader.data(), shader.size());
+		shaderCreateInfo.pCode = aligned.data();
+
+		VkResult result = vkCreateShaderModule(m_pDevice, &shaderCreateInfo, nullptr, &m_pVertexShader);
+		if(result != VK_SUCCESS) {
+			throw Exception(result, DSV_MSG_FAILED_TO_CREATE_SHADER);
+		}
         }
 
 	void GraphicVulkanApplication::CreateImageViews() {
