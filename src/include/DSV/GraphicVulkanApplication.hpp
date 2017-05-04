@@ -40,7 +40,8 @@ namespace DSV {
 			void CreateImageViews();
                         void LoadShaders(const char * vertexShaderFilename, const char * fragmentShaderFilename);
 			void CreateVertexShader();
-			void CreateShader(std::vector<char> shader);
+			void CreateFragmentShader();
+			void CreateShader(std::vector<char> shader, VkShaderModule * shaderModule);
 
 		protected:
 			VkSwapchainCreateInfoKHR m_swapChainCreateInfo;

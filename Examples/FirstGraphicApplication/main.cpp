@@ -116,6 +116,9 @@ int main(int argc, char ** argv) {
 			app.CreateSwapChain();
 			app.DefaultImageViewsSetup();
 			app.CreateImageViews();
+			app.LoadShaders("shaders/vert.spv","shaders/frag.spv");
+			app.CreateVertexShader();
+			app.CreateFragmentShader();
 		}
 		else {
 			std::cout << "Required layers or extensions aren't supported... :(\n";

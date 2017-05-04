@@ -36,6 +36,13 @@ namespace DSV {
 	};
 
 	GraphicVulkanApplication::~GraphicVulkanApplication() {
+		if(m_pFragmentShader != nullptr) {
+			vkDestroyShaderModule(m_pDevice, m_pFragmentShader, nullptr);
+		}
+		if(m_pVertexShader != nullptr) {
+			vkDestroyShaderModule(m_pDevice, m_pVertexShader, nullptr);
+		}
+
 		for (int i = 0; i < m_pImageViews.size(); i++) {
 			vkDestroyImageView(m_pDevice, m_pImageViews[i], nullptr);
 		}
@@ -171,23 +178,24 @@ namespace DSV {
 		vertexShader.close();
 		fragmentShader.close();
 	}
+
 	void GraphicVulkanApplication::CreateVertexShader() {
-		CreateShader(m_vertexShader);
+		CreateShader(m_vertexShader, &m_pVertexShader);
 	}
 
 	void GraphicVulkanApplication::CreateFragmentShader() {
-		CreateShader(m_fragmentShader);
+		CreateShader(m_fragmentShader, &m_pFragmentShader);
 	}
 
-	void GraphicVulkanApplication::CreateShader(std::vector<char> shader) {
+	void GraphicVulkanApplication::CreateShader(std::vector<char> shader, VkShaderModule * shaderModule) {
 		VkShaderModuleCreateInfo shaderCreateInfo = {};
 		shaderCreateInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-		shaderCreateInfo.codeSize shader.size();
+		shaderCreateInfo.codeSize = shader.size();
 		std::vector<uint32_t> aligned(shader.size() / sizeof(uint32_t) + 1);
 		memcpy(aligned.data(), shader.data(), shader.size());
 		shaderCreateInfo.pCode = aligned.data();
 
-		VkResult result = vkCreateShaderModule(m_pDevice, &shaderCreateInfo, nullptr, &m_pVertexShader);
+		VkResult result = vkCreateShaderModule(m_pDevice, &shaderCreateInfo, nullptr, shaderModule);
 		if(result != VK_SUCCESS) {
 			throw Exception(result, DSV_MSG_FAILED_TO_CREATE_SHADER);
 		}
