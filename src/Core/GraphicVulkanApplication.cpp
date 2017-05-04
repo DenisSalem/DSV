@@ -24,6 +24,7 @@ namespace DSV {
 		m_pSurface = nullptr;
                 m_pVertexShader = nullptr;
                 m_pFragmentShader = nullptr;
+		m_pPipelineLayout = nullptr;
 		m_pImageViews = std::vector<VkImageView>(0);
                 m_pSwapChainImages = std::vector<VkImage>(0);
 		m_vertexShader = std::vector<char>(0);
@@ -40,6 +41,11 @@ namespace DSV {
 		m_viewport = {};
 		m_scissor = {};
 		m_rasterizer = {};
+		multisampling = {};
+		m_depthStencil = {};
+		m_colorBlendAttachment = {};
+		m_colorBlending = {};
+
 		m_imageViewsCreateInfo = std::vector<VkImageViewCreateInfo>(0);
 	};
 
@@ -97,7 +103,7 @@ namespace DSV {
 		return std::vector<VkPresentModeKHR>(0);
 	}
 
-	void GraphicVulkanApplication::DefaultSwapChainSetup(VkSurfaceCapabilitiesKHR capabilities, VkSurfaceFormatKHR format, VkPresentModeKHR presentMode, VkExtent2D extent) {
+	void GraphicVulkanApplication::SwapChainDefaultSetup(VkSurfaceCapabilitiesKHR capabilities, VkSurfaceFormatKHR format, VkPresentModeKHR presentMode, VkExtent2D extent) {
 		m_surfaceFormat = format;
 		m_surfacePresentMode = presentMode;
 		m_surfaceExtent = extent;
@@ -142,7 +148,7 @@ namespace DSV {
                 m_pImageViews.resize(m_pSwapChainImages.size(), nullptr);
 	}
 
-        void GraphicVulkanApplication::DefaultImageViewsSetup() {
+        void GraphicVulkanApplication::ImageViewsDefaultSetup() {
                 for(uint32_t i = 0; i < m_pImageViews.size(); i++) {
 			m_imageViewsCreateInfo[i] = {};
 			m_imageViewsCreateInfo[i].sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -157,7 +163,7 @@ namespace DSV {
 			m_imageViewsCreateInfo[i].subresourceRange.baseMipLevel = 0;
 			m_imageViewsCreateInfo[i].subresourceRange.levelCount = 1;
 			m_imageViewsCreateInfo[i].subresourceRange.baseArrayLayer = 0;
-			m_imageViewsCreateInfo[i].subresourceRange.layerCount = 1;	
+			m_imageViewsCreateInfo[i].subresourceRange.layerCount = 1;
                 }
         }
 
@@ -217,7 +223,7 @@ namespace DSV {
 		}
         }
 
-	void GraphicVulkanApplication::DefaultCreateShaderStage(VkPipelineShaderStageCreateInfo * stageInfo, VkShaderStageFlagBits flag, VkShaderModule shaderModule) {
+	void GraphicVulkanApplication::CreateDefaultShaderStage(VkPipelineShaderStageCreateInfo * stageInfo, VkShaderStageFlagBits flag, VkShaderModule shaderModule) {
 		stageInfo->sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 		stageInfo->pName = "main";
 		stageInfo->stage = flag;
@@ -259,6 +265,46 @@ namespace DSV {
 		m_rasterizer.depthBiasConstantFactor = 0.0f;
 		m_rasterizer.depthBiasClamp = 0.0f;
 		m_rasterizer.depthBiasSlopeFactor = 0.0f;
+
+		m_multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+		m_multisampling.sampleShadingEnable = VK_FALSE;
+		m_multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+		m_multisampling.minSampleShading = 1.0f;
+		m_multisampling.pSampleMask = nullptr;
+		m_multisampling.alphaToCoverageEnable = VK_FALSE;
+		m_multisampling.alphaToOneEnable = VK_FALSE;
+
+		m_colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+		m_colorBlendAttachment.blendEnable = VK_TRUE;
+		m_colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+		m_colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+		m_colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
+		m_colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+		m_colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
+		m_colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
+
+		m_colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+		m_colorBlending.logicOpEnable = VK_TRUE;
+		m_colorBlending.logicOp = VK_LOGIC_OP_COPY;
+		m_colorBlending.attachmentCount = 1;
+		m_colorBlending.pAttachments = &colorBlendAttachment;
+		m_colorBlending.blendConstants[0] = 0.0f;
+		m_colorBlending.blendConstants[1] = 0.0f;
+		m_colorBlending.blendConstants[2] = 0.0f;
+		m_colorBlending.blendConstants[3] = 0.0f;
+	}
+
+	void GraphicVulkanApplication::CreateDefaultPipelineLayout() {
+		m_pPipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+		m_pPipelineLayoutInfo.setLayoutCount = 0;
+		m_pPipelineLayoutInfo.pSetLayouts = nullptr;
+		m_pPipelineLayoutInfo.pushConstantRangeCount = 0;
+		m_pPipelineLayoutInfo.pPushConstantRanges = 0;
+
+		VkResult result = vkCreatePipelineLayout(m_pDevice, &m_pPipelineLayoutInfo, nullptr, &m_pPipelineLayout)
+		if( result!= VK_SUCCESS) {
+    			throw Exception(result, DSV_MSG_FAILED_TO_CREATE_PIPELINE_LAYOUT);
+		}	
 	}
 
 	void GraphicVulkanApplication::CreateImageViews() {

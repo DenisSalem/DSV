@@ -13,6 +13,7 @@
 #define DSV_MSG_FAILED_TO_LOAD_VERTEX_SHADER "DSV: Failed to load vertex shader!"
 #define DSV_MSG_FAILED_TO_LOAD_FRAGMENT_SHADER "DSV: Failed to load fragment shader!"
 #define DSV_MSG_FAILED_TO_CREATE_SHADER "DSV: Failed to create shader!"
+#define DSV_MSG_FAILED_TO_CREATE_PIPELINE_LAYOUT "DSV: Failed to create pipeline layout!"
 
 #define DSV_UNKNOWN_FORMAT 3
 #define DSV_UNKNOWN_PRESENT_MODE 4
@@ -34,8 +35,8 @@ namespace DSV {
 			std::vector<VkPresentModeKHR> GetSurfacePresentModes(int physicalDeviceIndex);
 			VkSurfaceKHR GetSurface();
 
-			void DefaultSwapChainSetup(VkSurfaceCapabilitiesKHR capabilities, VkSurfaceFormatKHR format, VkPresentModeKHR presentMode, VkExtent2D extent);
-			void DefaultImageViewsSetup();
+			void SwapChainDefaultSetup(VkSurfaceCapabilitiesKHR capabilities, VkSurfaceFormatKHR format, VkPresentModeKHR presentMode, VkExtent2D extent);
+			void ImageViewsDefaultSetup();
                         void CreateSwapChain();
 			void CreateImageViews();
                         void LoadShaders(const char * vertexShaderFilename, const char * fragmentShaderFilename);
@@ -44,7 +45,7 @@ namespace DSV {
 			void CreatePipeline();
 			void CreateVertexShaderStage();
 			void CreateFragmentShaderStage();
-			void DefaultCreateShaderStage(VkPipelineShaderStageCreateInfo * stageInfo, VkShaderStageFlagBits flag, VkShaderModule shaderModule);
+			void CreateDefaultShaderStage(VkPipelineShaderStageCreateInfo * stageInfo, VkShaderStageFlagBits flag, VkShaderModule shaderModule);
 			void DefaultFixedFunctions(VkPrimitiveTopology topology, VkPolygonMode polygonMode);
 
 		protected:
@@ -56,8 +57,16 @@ namespace DSV {
 			VkPipelineInputAssemblyStateCreateInfo m_inputAssembly;
 			VkPipelineViewportStateCreateInfo m_viewportState;
 			VkPipelineRasterizationStateCreateInfo m_rasterizer;
+			VkPipelineMultisampleStateCreateInfo m_multisampling;
+			VkPipelineDepthStencilStateCreateInfo m_depthSencil;
+			VkPipelineColorBlendAttachmentState m_colorBlendAttachment;
+			VkPipelineColorBlendStateCreateInfo m_colorBlending;
+
+			VkPipelineLayout m_pPipelineLayout;
+
 			VkViewport m_viewport;
 			VkRect2D m_scissor;
+
 
 			VkSwapchainCreateInfoKHR m_swapChainCreateInfo;
 			VkSurfaceKHR m_pSurface;
