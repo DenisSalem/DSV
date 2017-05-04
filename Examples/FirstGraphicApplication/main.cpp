@@ -111,16 +111,20 @@ int main(int argc, char ** argv) {
 			VkPresentModeKHR surfacePresentMode = DSV::GetSurfacePresentMode(app.GetSurfacePresentModes(physicalDevice), VK_PRESENT_MODE_IMMEDIATE_KHR);
 			VkExtent2D extent = {WINDOW_WIDTH, WINDOW_HEIGHT};
 
-			app.DefaultSwapChainSetup(surfaceCapabilities, surfaceFormat, surfacePresentMode, extent);
+			app.SwapChainDefaultSetup(surfaceCapabilities, surfaceFormat, surfacePresentMode, extent);
 			// Before actual Swapchain creation one might want to tune a little bit more m_SwapChaineCreateInfo by implementing some setters.
 			app.CreateSwapChain();
-			app.DefaultImageViewsSetup();
+			app.ImageViewsDefaultSetup();
 			app.CreateImageViews();
 			app.LoadShaders("shaders/vert.spv","shaders/frag.spv");
 			app.CreateVertexShader();
 			app.CreateFragmentShader();
 			app.CreateVertexShaderStage();
 			app.CreateFragmentShaderStage();
+			app.DefaultFixedFunctions(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_POLYGON_MODE_FILL);
+			app.CreateDefaultPipelineLayout();
+			app.CreateDefaultRenderPass();
+
 		}
 		else {
 			std::cout << "Required layers or extensions aren't supported... :(\n";

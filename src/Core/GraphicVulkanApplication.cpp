@@ -25,6 +25,7 @@ namespace DSV {
                 m_pVertexShader = nullptr;
                 m_pFragmentShader = nullptr;
 		m_pPipelineLayout = nullptr;
+		m_pRenderPass = nullptr;
 		m_pImageViews = std::vector<VkImageView>(0);
                 m_pSwapChainImages = std::vector<VkImage>(0);
 		m_vertexShader = std::vector<char>(0);
@@ -41,15 +42,28 @@ namespace DSV {
 		m_viewport = {};
 		m_scissor = {};
 		m_rasterizer = {};
-		multisampling = {};
+		m_multisampling = {};
 		m_depthStencil = {};
 		m_colorBlendAttachment = {};
 		m_colorBlending = {};
+		m_pipelineLayoutCreateInfo = {};
+		m_colorAttachment = {};
+		m_colorAttachmentRef = {};
+		m_subpass = {};
+		m_renderPassCreateInfo = {};
 
 		m_imageViewsCreateInfo = std::vector<VkImageViewCreateInfo>(0);
 	};
 
 	GraphicVulkanApplication::~GraphicVulkanApplication() {
+		if(m_pRenderPass != nullptr) {
+			vkDestroyRenderPass(m_pDevice, m_pRenderPass, nullptr);
+		}
+
+		if(m_pPipelineLayout != nullptr) {
+			vkDestroyPipelineLayout(m_pDevice,m_pPipelineLayout, nullptr);
+		}
+
 		if(m_pFragmentShader != nullptr) {
 			vkDestroyShaderModule(m_pDevice, m_pFragmentShader, nullptr);
 		}
@@ -202,11 +216,11 @@ namespace DSV {
 	}
 
 	void GraphicVulkanApplication::CreateVertexShaderStage() {
-		DefaultCreateShaderStage(&m_vertShaderStageInfo, VK_SHADER_STAGE_VERTEX_BIT, m_pVertexShader);
+		CreateDefaultShaderStage(&m_vertShaderStageInfo, VK_SHADER_STAGE_VERTEX_BIT, m_pVertexShader);
 	}
 
 	void GraphicVulkanApplication::CreateFragmentShaderStage() {
-		DefaultCreateShaderStage(&m_fragShaderStageInfo, VK_SHADER_STAGE_FRAGMENT_BIT, m_pFragmentShader);
+		CreateDefaultShaderStage(&m_fragShaderStageInfo, VK_SHADER_STAGE_FRAGMENT_BIT, m_pFragmentShader);
 	}
 
 	void GraphicVulkanApplication::CreateShader(std::vector<char> shader, VkShaderModule * shaderModule) {
@@ -287,7 +301,7 @@ namespace DSV {
 		m_colorBlending.logicOpEnable = VK_TRUE;
 		m_colorBlending.logicOp = VK_LOGIC_OP_COPY;
 		m_colorBlending.attachmentCount = 1;
-		m_colorBlending.pAttachments = &colorBlendAttachment;
+		m_colorBlending.pAttachments = &m_colorBlendAttachment;
 		m_colorBlending.blendConstants[0] = 0.0f;
 		m_colorBlending.blendConstants[1] = 0.0f;
 		m_colorBlending.blendConstants[2] = 0.0f;
@@ -295,16 +309,46 @@ namespace DSV {
 	}
 
 	void GraphicVulkanApplication::CreateDefaultPipelineLayout() {
-		m_pPipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-		m_pPipelineLayoutInfo.setLayoutCount = 0;
-		m_pPipelineLayoutInfo.pSetLayouts = nullptr;
-		m_pPipelineLayoutInfo.pushConstantRangeCount = 0;
-		m_pPipelineLayoutInfo.pPushConstantRanges = 0;
+		m_pipelineLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+		m_pipelineLayoutCreateInfo.setLayoutCount = 0;
+		m_pipelineLayoutCreateInfo.pSetLayouts = nullptr;
+		m_pipelineLayoutCreateInfo.pushConstantRangeCount = 0;
+		m_pipelineLayoutCreateInfo.pPushConstantRanges = 0;
 
-		VkResult result = vkCreatePipelineLayout(m_pDevice, &m_pPipelineLayoutInfo, nullptr, &m_pPipelineLayout)
+		VkResult result = vkCreatePipelineLayout(m_pDevice, &m_pipelineLayoutCreateInfo, nullptr, &m_pPipelineLayout);
 		if( result!= VK_SUCCESS) {
     			throw Exception(result, DSV_MSG_FAILED_TO_CREATE_PIPELINE_LAYOUT);
 		}	
+	}
+
+	void GraphicVulkanApplication::CreateDefaultRenderPass() {
+		m_colorAttachment.format = m_surfaceFormat.format;
+    		m_colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+    		m_colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+		m_colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+		m_colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+		m_colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+		m_colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+		m_colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+
+		m_colorAttachmentRef.attachment = 0;
+		m_colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		
+		m_subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+		m_subpass.colorAttachmentCount = 1;
+		m_subpass.pColorAttachments = &m_colorAttachmentRef;
+		
+		
+		m_renderPassCreateInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+		m_renderPassCreateInfo.attachmentCount = 1;
+		m_renderPassCreateInfo.pAttachments = &m_colorAttachment;
+		m_renderPassCreateInfo.subpassCount = 1;
+		m_renderPassCreateInfo.pSubpasses = &m_subpass;
+
+		VkResult result = vkCreateRenderPass(m_pDevice, &m_renderPassCreateInfo, nullptr, &m_pRenderPass);
+		if(result != VK_SUCCESS) {
+			throw Exception(result, DSV_MSG_FAILED_TO_CREATE_RENDER_PASS);
+		}
 	}
 
 	void GraphicVulkanApplication::CreateImageViews() {

@@ -14,6 +14,7 @@
 #define DSV_MSG_FAILED_TO_LOAD_FRAGMENT_SHADER "DSV: Failed to load fragment shader!"
 #define DSV_MSG_FAILED_TO_CREATE_SHADER "DSV: Failed to create shader!"
 #define DSV_MSG_FAILED_TO_CREATE_PIPELINE_LAYOUT "DSV: Failed to create pipeline layout!"
+#define DSV_MSG_FAILED_TO_CREATE_RENDER_PASS "DSV: Failed to create render pass!"
 
 #define DSV_UNKNOWN_FORMAT 3
 #define DSV_UNKNOWN_PRESENT_MODE 4
@@ -47,6 +48,8 @@ namespace DSV {
 			void CreateFragmentShaderStage();
 			void CreateDefaultShaderStage(VkPipelineShaderStageCreateInfo * stageInfo, VkShaderStageFlagBits flag, VkShaderModule shaderModule);
 			void DefaultFixedFunctions(VkPrimitiveTopology topology, VkPolygonMode polygonMode);
+			void CreateDefaultPipelineLayout();
+			void CreateDefaultRenderPass();
 
 		protected:
 			void CreateShader(std::vector<char> shader, VkShaderModule * shaderModule);
@@ -58,9 +61,15 @@ namespace DSV {
 			VkPipelineViewportStateCreateInfo m_viewportState;
 			VkPipelineRasterizationStateCreateInfo m_rasterizer;
 			VkPipelineMultisampleStateCreateInfo m_multisampling;
-			VkPipelineDepthStencilStateCreateInfo m_depthSencil;
+			VkPipelineDepthStencilStateCreateInfo m_depthStencil;
 			VkPipelineColorBlendAttachmentState m_colorBlendAttachment;
 			VkPipelineColorBlendStateCreateInfo m_colorBlending;
+			VkPipelineLayoutCreateInfo m_pipelineLayoutCreateInfo;
+			VkAttachmentDescription m_colorAttachment;
+			VkAttachmentReference m_colorAttachmentRef;
+			VkSubpassDescription m_subpass;
+			VkRenderPass m_pRenderPass;
+			VkRenderPassCreateInfo m_renderPassCreateInfo;
 
 			VkPipelineLayout m_pPipelineLayout;
 
