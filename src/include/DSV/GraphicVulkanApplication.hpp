@@ -41,9 +41,24 @@ namespace DSV {
                         void LoadShaders(const char * vertexShaderFilename, const char * fragmentShaderFilename);
 			void CreateVertexShader();
 			void CreateFragmentShader();
-			void CreateShader(std::vector<char> shader, VkShaderModule * shaderModule);
+			void CreatePipeline();
+			void CreateVertexShaderStage();
+			void CreateFragmentShaderStage();
+			void DefaultCreateShaderStage(VkPipelineShaderStageCreateInfo * stageInfo, VkShaderStageFlagBits flag, VkShaderModule shaderModule);
+			void DefaultFixedFunctions(VkPrimitiveTopology topology, VkPolygonMode polygonMode);
 
 		protected:
+			void CreateShader(std::vector<char> shader, VkShaderModule * shaderModule);
+			
+			VkPipelineShaderStageCreateInfo m_vertShaderStageInfo;
+			VkPipelineShaderStageCreateInfo m_fragShaderStageInfo;
+			VkPipelineVertexInputStateCreateInfo m_vertexInputInfo;
+			VkPipelineInputAssemblyStateCreateInfo m_inputAssembly;
+			VkPipelineViewportStateCreateInfo m_viewportState;
+			VkPipelineRasterizationStateCreateInfo m_rasterizer;
+			VkViewport m_viewport;
+			VkRect2D m_scissor;
+
 			VkSwapchainCreateInfoKHR m_swapChainCreateInfo;
 			VkSurfaceKHR m_pSurface;
 			VkSurfaceFormatKHR m_surfaceFormat;
@@ -58,6 +73,7 @@ namespace DSV {
 			std::vector<VkImageViewCreateInfo> m_imageViewsCreateInfo;
 			std::vector<char> m_vertexShader;
 			std::vector<char> m_fragmentShader;
+			
 	};
 }
 

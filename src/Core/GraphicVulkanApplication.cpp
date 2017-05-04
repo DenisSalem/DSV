@@ -32,6 +32,14 @@ namespace DSV {
 		m_surfacePresentMode = {};
 		m_surfaceExtent = {};
 		m_swapChainCreateInfo = {};
+		m_vertShaderStageInfo = {};
+		m_fragShaderStageInfo = {};
+		m_vertexInputInfo = {};
+		m_inputAssembly = {};
+		m_viewportState = {};
+		m_viewport = {};
+		m_scissor = {};
+		m_rasterizer = {};
 		m_imageViewsCreateInfo = std::vector<VkImageViewCreateInfo>(0);
 	};
 
@@ -187,6 +195,14 @@ namespace DSV {
 		CreateShader(m_fragmentShader, &m_pFragmentShader);
 	}
 
+	void GraphicVulkanApplication::CreateVertexShaderStage() {
+		DefaultCreateShaderStage(&m_vertShaderStageInfo, VK_SHADER_STAGE_VERTEX_BIT, m_pVertexShader);
+	}
+
+	void GraphicVulkanApplication::CreateFragmentShaderStage() {
+		DefaultCreateShaderStage(&m_fragShaderStageInfo, VK_SHADER_STAGE_FRAGMENT_BIT, m_pFragmentShader);
+	}
+
 	void GraphicVulkanApplication::CreateShader(std::vector<char> shader, VkShaderModule * shaderModule) {
 		VkShaderModuleCreateInfo shaderCreateInfo = {};
 		shaderCreateInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
@@ -200,6 +216,50 @@ namespace DSV {
 			throw Exception(result, DSV_MSG_FAILED_TO_CREATE_SHADER);
 		}
         }
+
+	void GraphicVulkanApplication::DefaultCreateShaderStage(VkPipelineShaderStageCreateInfo * stageInfo, VkShaderStageFlagBits flag, VkShaderModule shaderModule) {
+		stageInfo->sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+		stageInfo->pName = "main";
+		stageInfo->stage = flag;
+		stageInfo->module = shaderModule;
+	}
+
+	void GraphicVulkanApplication::DefaultFixedFunctions(VkPrimitiveTopology topology, VkPolygonMode polygonMode) {
+		m_vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+		
+		m_inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+		m_inputAssembly.topology = topology;
+		m_inputAssembly.primitiveRestartEnable = VK_FALSE;
+
+		m_viewport.x = 0.0f;
+		m_viewport.y = 0.0f;
+
+		m_viewport.width = (float) m_surfaceExtent.width;
+		m_viewport.height = (float) m_surfaceExtent.height;
+		m_viewport.minDepth = 0.0f;
+		m_viewport.maxDepth = 1.0f;
+
+		m_scissor.offset = {0,0};
+		m_scissor.extent = m_surfaceExtent;
+
+		m_viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+		m_viewportState.viewportCount = 1;
+		m_viewportState.pViewports = &m_viewport;
+		m_viewportState.scissorCount = 1;
+		m_viewportState.pScissors = &m_scissor;
+
+		m_rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+		m_rasterizer.depthClampEnable = VK_FALSE;
+		m_rasterizer.rasterizerDiscardEnable = VK_FALSE;
+		m_rasterizer.polygonMode = polygonMode;
+		m_rasterizer.lineWidth = 1.0f;
+		m_rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
+		m_rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
+		m_rasterizer.depthBiasEnable = VK_FALSE;
+		m_rasterizer.depthBiasConstantFactor = 0.0f;
+		m_rasterizer.depthBiasClamp = 0.0f;
+		m_rasterizer.depthBiasSlopeFactor = 0.0f;
+	}
 
 	void GraphicVulkanApplication::CreateImageViews() {
 		VkResult result;

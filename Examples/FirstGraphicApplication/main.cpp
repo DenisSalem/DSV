@@ -119,6 +119,8 @@ int main(int argc, char ** argv) {
 			app.LoadShaders("shaders/vert.spv","shaders/frag.spv");
 			app.CreateVertexShader();
 			app.CreateFragmentShader();
+			app.CreateVertexShaderStage();
+			app.CreateFragmentShaderStage();
 		}
 		else {
 			std::cout << "Required layers or extensions aren't supported... :(\n";
