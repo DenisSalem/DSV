@@ -55,6 +55,7 @@ namespace DSV {
 			void CreateDefaultPipeline();
 			void DefaultFramebuffersSetup();
 			void CreateFramebuffers();
+			void CreateCommandPool();
 
 		protected:
 			void CreateShader(std::vector<char> shader, VkShaderModule * shaderModule);
@@ -84,7 +85,6 @@ namespace DSV {
 			VkViewport m_viewport;
 			VkRect2D m_scissor;
 
-
 			VkSwapchainCreateInfoKHR m_swapChainCreateInfo;
 			VkSurfaceKHR m_pSurface;
 			VkSurfaceFormatKHR m_surfaceFormat;
@@ -101,6 +101,8 @@ namespace DSV {
 			std::vector<char> m_vertexShader;
 			std::vector<char> m_fragmentShader;
 			std::vector<VkFramebuffer> m_pSwapChainFramebuffers;
+			VkCommandPool m_pCommandPool;
+			VkCommandPoolCreateInfo m_commandPoolCreateInfo;
 	};
 }
 

@@ -91,7 +91,11 @@ int main(int argc, char ** argv) {
 			int physicalDevice = 0;	// 0 is the default for the example. For real application you should choose wisely.
 			DSV::PrintExtensions(DSV_MSG_AVAILABLE_DEVICE_EXTENSIONS, app.GetDeviceExtensions(physicalDevice, nullptr));
 			
-			app.GetQueueFamilies(physicalDevice);
+			std::cout << "Availables Queue family:\n";
+			for (const auto family : app.GetQueueFamilies(physicalDevice)) {
+				std::cout << "\tQueue Family: " << family.queueFlags << "\n";
+			}
+
 			int queueFamily = 0; // 0 is the default for the example. For real application you should choose wisely.
 			app.AddQueueFamily(queueFamily,3,std::vector<float>({0.70,0.15,0.15}));
 			

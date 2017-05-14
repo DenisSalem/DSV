@@ -57,6 +57,7 @@ namespace DSV {
 		m_subpass = {};
 		m_renderPassCreateInfo = {};
 	  	m_pipelineCreateInfo = {};
+		m_CommandPoolCreateInfo = {};
 
 		m_imageViewsCreateInfo = std::vector<VkImageViewCreateInfo>(0);
 	};
@@ -421,6 +422,13 @@ namespace DSV {
 			if (result != VK_SUCCESS) {
 				throw Exception(result, DSV_MSG_FAILED_TO_CREATE_FRAMEBUFFERS);
 			}
+		}
+	}
+
+	void GraphicVulkanApplication::CreateCommandPool() {
+		uint32_t index;
+		for (const auto family : app.GetQueueFamilies(physicalDevice)) {
+			std::cout << "\tQueue Family: " << family.queueFlags << "\n";
 		}
 	}
 
