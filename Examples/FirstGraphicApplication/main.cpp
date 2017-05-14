@@ -124,7 +124,7 @@ int main(int argc, char ** argv) {
 			app.DefaultFixedFunctions(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_POLYGON_MODE_FILL);
 			app.CreateDefaultPipelineLayout();
 			app.CreateDefaultRenderPass();
-
+			app.CreateDefaultPipeline();
 		}
 		else {
 			std::cout << "Required layers or extensions aren't supported... :(\n";

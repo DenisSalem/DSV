@@ -26,10 +26,13 @@ namespace DSV {
                 m_pFragmentShader = nullptr;
 		m_pPipelineLayout = nullptr;
 		m_pRenderPass = nullptr;
+		m_pPipeline = nullptr;
 		m_pImageViews = std::vector<VkImageView>(0);
                 m_pSwapChainImages = std::vector<VkImage>(0);
 		m_vertexShader = std::vector<char>(0);
 		m_fragmentShader = std::vector<char>(0);
+		m_stagesCreateInfos = std::vector<VkPipelineShaderStageCreateInfo>(0);
+		
 		m_surfaceFormat = {};
 		m_surfacePresentMode = {};
 		m_surfaceExtent = {};
@@ -41,21 +44,26 @@ namespace DSV {
 		m_viewportState = {};
 		m_viewport = {};
 		m_scissor = {};
-		m_rasterizer = {};
-		m_multisampling = {};
+		m_rasterizerState= {};
+		m_multisamplingState = {};
 		m_depthStencil = {};
 		m_colorBlendAttachment = {};
-		m_colorBlending = {};
+		m_colorBlendingState = {};
 		m_pipelineLayoutCreateInfo = {};
 		m_colorAttachment = {};
 		m_colorAttachmentRef = {};
 		m_subpass = {};
 		m_renderPassCreateInfo = {};
+	  	m_pipelineCreateInfo = {};
 
 		m_imageViewsCreateInfo = std::vector<VkImageViewCreateInfo>(0);
 	};
 
 	GraphicVulkanApplication::~GraphicVulkanApplication() {
+	  	if(m_pPipeline != nullptr) {
+			vkDestroyPipeline(m_pDevice, m_pPipeline, nullptr);
+		}
+		
 		if(m_pRenderPass != nullptr) {
 			vkDestroyRenderPass(m_pDevice, m_pRenderPass, nullptr);
 		}
@@ -268,25 +276,25 @@ namespace DSV {
 		m_viewportState.scissorCount = 1;
 		m_viewportState.pScissors = &m_scissor;
 
-		m_rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
-		m_rasterizer.depthClampEnable = VK_FALSE;
-		m_rasterizer.rasterizerDiscardEnable = VK_FALSE;
-		m_rasterizer.polygonMode = polygonMode;
-		m_rasterizer.lineWidth = 1.0f;
-		m_rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
-		m_rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
-		m_rasterizer.depthBiasEnable = VK_FALSE;
-		m_rasterizer.depthBiasConstantFactor = 0.0f;
-		m_rasterizer.depthBiasClamp = 0.0f;
-		m_rasterizer.depthBiasSlopeFactor = 0.0f;
+		m_rasterizerState.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+		m_rasterizerState.depthClampEnable = VK_FALSE;
+		m_rasterizerState.rasterizerDiscardEnable = VK_FALSE;
+		m_rasterizerState.polygonMode = polygonMode;
+		m_rasterizerState.lineWidth = 1.0f;
+		m_rasterizerState.cullMode = VK_CULL_MODE_BACK_BIT;
+		m_rasterizerState.frontFace = VK_FRONT_FACE_CLOCKWISE;
+		m_rasterizerState.depthBiasEnable = VK_FALSE;
+		m_rasterizerState.depthBiasConstantFactor = 0.0f;
+		m_rasterizerState.depthBiasClamp = 0.0f;
+		m_rasterizerState.depthBiasSlopeFactor = 0.0f;
 
-		m_multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
-		m_multisampling.sampleShadingEnable = VK_FALSE;
-		m_multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
-		m_multisampling.minSampleShading = 1.0f;
-		m_multisampling.pSampleMask = nullptr;
-		m_multisampling.alphaToCoverageEnable = VK_FALSE;
-		m_multisampling.alphaToOneEnable = VK_FALSE;
+		m_multisamplingState.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+		m_multisamplingState.sampleShadingEnable = VK_FALSE;
+		m_multisamplingState.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+		m_multisamplingState.minSampleShading = 1.0f;
+		m_multisamplingState.pSampleMask = nullptr;
+		m_multisamplingState.alphaToCoverageEnable = VK_FALSE;
+		m_multisamplingState.alphaToOneEnable = VK_FALSE;
 
 		m_colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 		m_colorBlendAttachment.blendEnable = VK_TRUE;
@@ -297,15 +305,15 @@ namespace DSV {
 		m_colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
 		m_colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
 
-		m_colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-		m_colorBlending.logicOpEnable = VK_TRUE;
-		m_colorBlending.logicOp = VK_LOGIC_OP_COPY;
-		m_colorBlending.attachmentCount = 1;
-		m_colorBlending.pAttachments = &m_colorBlendAttachment;
-		m_colorBlending.blendConstants[0] = 0.0f;
-		m_colorBlending.blendConstants[1] = 0.0f;
-		m_colorBlending.blendConstants[2] = 0.0f;
-		m_colorBlending.blendConstants[3] = 0.0f;
+		m_colorBlendingState.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+		m_colorBlendingState.logicOpEnable = VK_FALSE;
+		m_colorBlendingState.logicOp = VK_LOGIC_OP_COPY;
+		m_colorBlendingState.attachmentCount = 1;
+		m_colorBlendingState.pAttachments = &m_colorBlendAttachment;
+		m_colorBlendingState.blendConstants[0] = 0.0f;
+		m_colorBlendingState.blendConstants[1] = 0.0f;
+		m_colorBlendingState.blendConstants[2] = 0.0f;
+		m_colorBlendingState.blendConstants[3] = 0.0f;
 	}
 
 	void GraphicVulkanApplication::CreateDefaultPipelineLayout() {
@@ -348,6 +356,37 @@ namespace DSV {
 		VkResult result = vkCreateRenderPass(m_pDevice, &m_renderPassCreateInfo, nullptr, &m_pRenderPass);
 		if(result != VK_SUCCESS) {
 			throw Exception(result, DSV_MSG_FAILED_TO_CREATE_RENDER_PASS);
+		}
+	}
+
+	void GraphicVulkanApplication::CreateDefaultPipeline() {
+	  	m_stagesCreateInfos.push_back(m_vertShaderStageInfo);
+	  	m_stagesCreateInfos.push_back(m_fragShaderStageInfo);
+		
+		m_pipelineCreateInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+		m_pipelineCreateInfo.stageCount = m_stagesCreateInfos.size();
+		m_pipelineCreateInfo.pStages = m_stagesCreateInfos.data();
+
+		m_pipelineCreateInfo.pVertexInputState = &m_vertexInputInfo;
+		m_pipelineCreateInfo.pInputAssemblyState = &m_inputAssembly;
+		m_pipelineCreateInfo.pViewportState = &m_viewportState;
+		m_pipelineCreateInfo.pRasterizationState = &m_rasterizerState;
+		m_pipelineCreateInfo.pMultisampleState = &m_multisamplingState;
+		m_pipelineCreateInfo.pDepthStencilState = nullptr; 
+		m_pipelineCreateInfo.pColorBlendState = &m_colorBlendingState;
+		m_pipelineCreateInfo.pDynamicState = nullptr;
+
+		m_pipelineCreateInfo.layout = m_pPipelineLayout;
+
+		m_pipelineCreateInfo.renderPass = m_pRenderPass;
+		m_pipelineCreateInfo.subpass = 0;
+
+		m_pipelineCreateInfo.basePipelineHandle = VK_NULL_HANDLE;
+		m_pipelineCreateInfo.basePipelineIndex = -1;
+
+		VkResult result = vkCreateGraphicsPipelines(m_pDevice, VK_NULL_HANDLE, 1, &m_pipelineCreateInfo, nullptr, &m_pPipeline);
+		if (result != VK_SUCCESS) {
+			throw Exception(result, DSV_MSG_FAILED_TO_CREATE_PIPELINE);
 		}
 	}
 

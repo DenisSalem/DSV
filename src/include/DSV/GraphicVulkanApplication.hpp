@@ -15,6 +15,7 @@
 #define DSV_MSG_FAILED_TO_CREATE_SHADER "DSV: Failed to create shader!"
 #define DSV_MSG_FAILED_TO_CREATE_PIPELINE_LAYOUT "DSV: Failed to create pipeline layout!"
 #define DSV_MSG_FAILED_TO_CREATE_RENDER_PASS "DSV: Failed to create render pass!"
+#define DSV_MSG_FAILED_TO_CREATE_PIPELINE "DSV: Failed to create pipeline!"
 
 #define DSV_UNKNOWN_FORMAT 3
 #define DSV_UNKNOWN_PRESENT_MODE 4
@@ -50,20 +51,24 @@ namespace DSV {
 			void DefaultFixedFunctions(VkPrimitiveTopology topology, VkPolygonMode polygonMode);
 			void CreateDefaultPipelineLayout();
 			void CreateDefaultRenderPass();
+			void CreateDefaultPipeline();
 
 		protected:
 			void CreateShader(std::vector<char> shader, VkShaderModule * shaderModule);
 			
+			std::vector<VkPipelineShaderStageCreateInfo> m_stagesCreateInfos;
+			
+			VkGraphicsPipelineCreateInfo m_pipelineCreateInfo;
 			VkPipelineShaderStageCreateInfo m_vertShaderStageInfo;
 			VkPipelineShaderStageCreateInfo m_fragShaderStageInfo;
 			VkPipelineVertexInputStateCreateInfo m_vertexInputInfo;
 			VkPipelineInputAssemblyStateCreateInfo m_inputAssembly;
 			VkPipelineViewportStateCreateInfo m_viewportState;
-			VkPipelineRasterizationStateCreateInfo m_rasterizer;
-			VkPipelineMultisampleStateCreateInfo m_multisampling;
+			VkPipelineRasterizationStateCreateInfo m_rasterizerState;
+			VkPipelineMultisampleStateCreateInfo m_multisamplingState;
 			VkPipelineDepthStencilStateCreateInfo m_depthStencil;
 			VkPipelineColorBlendAttachmentState m_colorBlendAttachment;
-			VkPipelineColorBlendStateCreateInfo m_colorBlending;
+			VkPipelineColorBlendStateCreateInfo m_colorBlendingState;
 			VkPipelineLayoutCreateInfo m_pipelineLayoutCreateInfo;
 			VkAttachmentDescription m_colorAttachment;
 			VkAttachmentReference m_colorAttachmentRef;
@@ -85,7 +90,7 @@ namespace DSV {
 			VkSwapchainKHR m_pSwapChain;
                         VkShaderModule m_pVertexShader;
                         VkShaderModule m_pFragmentShader;
-			
+			VkPipeline m_pPipeline;
 			std::vector<VkImage> m_pSwapChainImages;
                         std::vector<VkImageView> m_pImageViews;
 			std::vector<VkImageViewCreateInfo> m_imageViewsCreateInfo;
