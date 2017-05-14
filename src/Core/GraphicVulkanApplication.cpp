@@ -32,6 +32,8 @@ namespace DSV {
 		m_vertexShader = std::vector<char>(0);
 		m_fragmentShader = std::vector<char>(0);
 		m_stagesCreateInfos = std::vector<VkPipelineShaderStageCreateInfo>(0);
+		m_pSwapChainFramebuffers = std::vector<VkFramebuffer>(0);
+		m_framebufferCreateInfos = std::vector<VkFramebufferCreateInfo>(0);
 		
 		m_surfaceFormat = {};
 		m_surfacePresentMode = {};
@@ -60,6 +62,12 @@ namespace DSV {
 	};
 
 	GraphicVulkanApplication::~GraphicVulkanApplication() {
+	  	for (size_t i = 0; i < m_pSwapChainFramebuffers.size(); i++) {
+			if (m_pSwapChainFramebuffers[i] != nullptr) {
+				vkDestroyFramebuffer(m_pDevice, m_pSwapChainFramebuffers[i], nullptr);
+			}
+		}
+
 	  	if(m_pPipeline != nullptr) {
 			vkDestroyPipeline(m_pDevice, m_pPipeline, nullptr);
 		}
@@ -79,7 +87,7 @@ namespace DSV {
 			vkDestroyShaderModule(m_pDevice, m_pVertexShader, nullptr);
 		}
 
-		for (int i = 0; i < m_pImageViews.size(); i++) {
+		for (size_t i = 0; i < m_pImageViews.size(); i++) {
 			vkDestroyImageView(m_pDevice, m_pImageViews[i], nullptr);
 		}
 
@@ -387,6 +395,32 @@ namespace DSV {
 		VkResult result = vkCreateGraphicsPipelines(m_pDevice, VK_NULL_HANDLE, 1, &m_pipelineCreateInfo, nullptr, &m_pPipeline);
 		if (result != VK_SUCCESS) {
 			throw Exception(result, DSV_MSG_FAILED_TO_CREATE_PIPELINE);
+		}
+	}
+
+	void GraphicVulkanApplication::DefaultFramebuffersSetup() {
+		m_pSwapChainFramebuffers.resize(m_pImageViews.size());
+		m_framebufferCreateInfos.resize(m_pImageViews.size());
+
+		for (size_t i = 0; i < m_pImageViews.size(); i++) {
+			m_framebufferCreateInfos[i] = {};
+			m_framebufferCreateInfos[i].sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+			m_framebufferCreateInfos[i].renderPass = m_pRenderPass;
+			m_framebufferCreateInfos[i].attachmentCount = 1;
+			m_framebufferCreateInfos[i].pAttachments = &m_pImageViews[i];
+			m_framebufferCreateInfos[i].width = m_surfaceExtent.width;
+			m_framebufferCreateInfos[i].height = m_surfaceExtent.height;
+			m_framebufferCreateInfos[i].layers = 1;
+		}
+	}
+
+	void GraphicVulkanApplication::CreateFramebuffers() {
+		
+		for(size_t i = 0; i < m_framebufferCreateInfos.size(); i++) {
+			VkResult result = vkCreateFramebuffer(m_pDevice, &m_framebufferCreateInfos[i], nullptr, &m_pSwapChainFramebuffers[i]);
+			if (result != VK_SUCCESS) {
+				throw Exception(result, DSV_MSG_FAILED_TO_CREATE_FRAMEBUFFERS);
+			}
 		}
 	}
 

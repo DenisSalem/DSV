@@ -125,6 +125,8 @@ int main(int argc, char ** argv) {
 			app.CreateDefaultPipelineLayout();
 			app.CreateDefaultRenderPass();
 			app.CreateDefaultPipeline();
+			app.DefaultFramebuffersSetup();
+			app.CreateFramebuffers();
 		}
 		else {
 			std::cout << "Required layers or extensions aren't supported... :(\n";

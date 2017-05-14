@@ -16,6 +16,7 @@
 #define DSV_MSG_FAILED_TO_CREATE_PIPELINE_LAYOUT "DSV: Failed to create pipeline layout!"
 #define DSV_MSG_FAILED_TO_CREATE_RENDER_PASS "DSV: Failed to create render pass!"
 #define DSV_MSG_FAILED_TO_CREATE_PIPELINE "DSV: Failed to create pipeline!"
+#define DSV_MSG_FAILED_TO_CREATE_FRAMEBUFFERS "DSV: Failted to create framebuffers!"
 
 #define DSV_UNKNOWN_FORMAT 3
 #define DSV_UNKNOWN_PRESENT_MODE 4
@@ -52,6 +53,8 @@ namespace DSV {
 			void CreateDefaultPipelineLayout();
 			void CreateDefaultRenderPass();
 			void CreateDefaultPipeline();
+			void DefaultFramebuffersSetup();
+			void CreateFramebuffers();
 
 		protected:
 			void CreateShader(std::vector<char> shader, VkShaderModule * shaderModule);
@@ -92,11 +95,12 @@ namespace DSV {
                         VkShaderModule m_pFragmentShader;
 			VkPipeline m_pPipeline;
 			std::vector<VkImage> m_pSwapChainImages;
+			std::vector<VkFramebufferCreateInfo> m_framebufferCreateInfos;
                         std::vector<VkImageView> m_pImageViews;
 			std::vector<VkImageViewCreateInfo> m_imageViewsCreateInfo;
 			std::vector<char> m_vertexShader;
 			std::vector<char> m_fragmentShader;
-			
+			std::vector<VkFramebuffer> m_pSwapChainFramebuffers;
 	};
 }
 
