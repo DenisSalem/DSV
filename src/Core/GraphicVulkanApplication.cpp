@@ -423,14 +423,6 @@ namespace DSV {
 		}
 	}
 
-	void GraphicVulkanApplication::CreateCommandPool(VkQueueFlagBits flags) {
-		m_commandPoolCreateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-		m_commandPoolCreateInfo.queueFamilyIndex = this.GetRequiredFamilyIndex(flags);
-		m_commandPoolCreateInfo.flags = 0;
-
-		VkResult result = vkCreateCommandPool(m_pDevice, &m_commandPoolCreateInfo, nullptr, &m_pCommandPool);
-	}
-
 	void GraphicVulkanApplication::CreateImageViews() {
 		VkResult result;
                 for(uint32_t i = 0; i < m_pImageViews.size(); i++) {

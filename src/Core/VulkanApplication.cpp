@@ -103,7 +103,9 @@ namespace DSV {
 		m_callbackCreateInfo = {};
 	  	m_deviceFeatures = {};
 		m_appInfo = {};
-		m_CommandPoolCreateInfo = {};
+		m_commandPoolCreateInfo = {};
+
+		m_physicalDeviceIndex = 0;
 		
 		m_appInfo.pApplicationName = applicationName;
 		m_appInfo.applicationVersion = applicationVersion;
@@ -188,6 +190,7 @@ namespace DSV {
 	}
 
 	void VulkanApplication::CreateLogicalDevice(int physicalDeviceIndex) {
+	  	m_physicalDeviceIndex = physicalDeviceIndex;
 		CreateLogicalDevice(physicalDeviceIndex, std::vector<const char*>(0));
 	}
 
@@ -226,23 +229,24 @@ namespace DSV {
 
 	uint32_t VulkanApplication::GetRequiredQueueFamilyIndex(VkQueueFlagBits flags) {
 		uint32_t index = 0;
-		bool queueMatch = false
-		for (const auto family : this.GetQueueFamilies(physicalDevice)) {
+		bool queueMatch = false;
+		for (const auto family : this->GetQueueFamilies(m_physicalDeviceIndex)) {
 		  	if(family.queueFlags & flags == flags) {
 			  	queueMatch = true;
 				break;
 			}
 			index++;
 		}
-		if (queueMatch != true) {
+		if (queueMatch != true | flags == 0) {
 			throw Exception(DSV_REQUIRED_QUEUE_FAMILY_MISSING, DSV_MSG_REQUIRED_QUEUE_FAMILY_MISSING);
 		}
+		std::cout << index << " " << flags << "\n";
 		return index;
 	}
 
-	void GraphicVulkanApplication::CreateCommandPool(VkQueueFlagBits flags) {
+	void VulkanApplication::CreateCommandPool(VkQueueFlagBits flags) {
 		m_commandPoolCreateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-		m_commandPoolCreateInfo.queueFamilyIndex = this.GetRequiredFamilyIndex(flags);
+		m_commandPoolCreateInfo.queueFamilyIndex = this->GetRequiredQueueFamilyIndex(flags);
 		m_commandPoolCreateInfo.flags = 0;
 
 		VkResult result = vkCreateCommandPool(m_pDevice, &m_commandPoolCreateInfo, nullptr, &m_pCommandPool);

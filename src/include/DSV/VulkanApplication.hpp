@@ -65,25 +65,26 @@ namespace DSV {
 			void SetupCallback(VkDebugReportFlagsEXT flags, PFN_vkDebugReportCallbackEXT debugCallback);	
 			void InitVulkan(std::vector<const char *> requiredExtensions, std::vector<const char *> requiredLayers);
 			void InitVulkan();
-			uint32_t VulkanApplication::GetRequiredQueueFamilyIndex(VkQueueFlagBits flags);	
+			uint32_t GetRequiredQueueFamilyIndex(VkQueueFlagBits flags);	
 			void CreateCommandPool(VkQueueFlagBits flags);
 
 			VkInstance GetInstance();
 			
 		protected:
+			int m_physicalDeviceIndex;
 			std::vector<const char *> m_requiredExtensions;
 			std::vector<const char *> m_requiredLayers;
 			std::vector<VkCommandBuffer> commandBuffers;
+			std::vector<VkDeviceQueueCreateInfo> m_queueCreateInfos;
+			std::vector< std::vector<float> > m_queuePriorities;
+			std::vector<VkPhysicalDevice> m_physicalDevices;
 			VkInstance m_pInstance;
 			VkDevice m_pDevice;
  			VkApplicationInfo m_appInfo;
 			VkInstanceCreateInfo m_instanceCreateInfo;
-			std::vector<VkDeviceQueueCreateInfo> m_queueCreateInfos;
-			std::vector< std::vector<float> > m_queuePriorities;
 			VkDebugReportCallbackCreateInfoEXT m_callbackCreateInfo;
 			VkDeviceCreateInfo m_deviceCreateInfo;
 			VkDebugReportCallbackEXT m_pCallback;
-			std::vector<VkPhysicalDevice> m_physicalDevices;
 			VkPhysicalDeviceFeatures m_deviceFeatures;
 			
 			VkCommandPool m_pCommandPool;

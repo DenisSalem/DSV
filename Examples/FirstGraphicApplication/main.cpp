@@ -131,6 +131,7 @@ int main(int argc, char ** argv) {
 			app.CreateDefaultPipeline();
 			app.DefaultFramebuffersSetup();
 			app.CreateFramebuffers();
+			app.CreateCommandPool(VK_QUEUE_GRAPHICS_BIT);
 		}
 		else {
 			std::cout << "Required layers or extensions aren't supported... :(\n";

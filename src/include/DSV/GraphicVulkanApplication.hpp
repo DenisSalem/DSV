@@ -54,7 +54,6 @@ namespace DSV {
 			void CreateDefaultPipeline();
 			void DefaultFramebuffersSetup();
 			void CreateFramebuffers();
-			void CreateCommandPool();
 
 		protected:
 			void CreateShader(std::vector<char> shader, VkShaderModule * shaderModule);
