@@ -73,6 +73,7 @@ namespace DSV {
 		protected:
 			std::vector<const char *> m_requiredExtensions;
 			std::vector<const char *> m_requiredLayers;
+			std::vector<VkCommandBuffer> commandBuffers;
 			VkInstance m_pInstance;
 			VkDevice m_pDevice;
  			VkApplicationInfo m_appInfo;
