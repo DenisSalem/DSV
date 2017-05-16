@@ -12,6 +12,8 @@
 #define DSV_MSG_NO_PHYSICAL_DEVICES "DSV: No physical devices!"
 #define DSV_MSG_FAILED_TO_CREATE_LOGICAL_DEVICE "DSV: Failed to create logical device!"
 #define DSV_MSG_QUEUE_FAMILY_INDEX_DEFINED_TWICE "DSV: Queue family index defined twice!"
+#define DSV_MSG_REQUIRED_QUEUE_FAMILY_MISSING "DSV: Required queue family missing!"
+#define DSV_MSG_FAILED_TO_CREATE_COMMAND_POOL "DSV: Failed to create command pool!"
 
 #define DSV_MSG_AVAILABLE_INSTANCE_LAYERS "DSV: Available instance layers:\n"
 #define DSV_MSG_AVAILABLE_INSTANCE_EXTENSIONS "DSV: Available instance extensions:\n"
@@ -20,6 +22,7 @@
 
 #define DSV_NO_PHYSICAL_DEVICES	1
 #define DSV_QUEUE_FAMILY_INDEX_DEFINED_TWICE 2
+#define DSV_REQUIRED_QUEUE_FAMILY_MISSING 3
 
 #define DSV_TRACE { std::cerr << "DSV_TRACE: "<< __FILE__ << ", " << __LINE__ << "\n"; } 
 
@@ -62,6 +65,8 @@ namespace DSV {
 			void SetupCallback(VkDebugReportFlagsEXT flags, PFN_vkDebugReportCallbackEXT debugCallback);	
 			void InitVulkan(std::vector<const char *> requiredExtensions, std::vector<const char *> requiredLayers);
 			void InitVulkan();
+			uint32_t VulkanApplication::GetRequiredQueueFamilyIndex(VkQueueFlagBits flags);	
+			void CreateCommandPool(VkQueueFlagBits flags);
 
 			VkInstance GetInstance();
 			
@@ -79,6 +84,9 @@ namespace DSV {
 			VkDebugReportCallbackEXT m_pCallback;
 			std::vector<VkPhysicalDevice> m_physicalDevices;
 			VkPhysicalDeviceFeatures m_deviceFeatures;
+			
+			VkCommandPool m_pCommandPool;
+			VkCommandPoolCreateInfo m_commandPoolCreateInfo;
 	};
 }
 

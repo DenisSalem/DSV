@@ -18,10 +18,10 @@
 #define DSV_MSG_FAILED_TO_CREATE_PIPELINE "DSV: Failed to create pipeline!"
 #define DSV_MSG_FAILED_TO_CREATE_FRAMEBUFFERS "DSV: Failted to create framebuffers!"
 
-#define DSV_UNKNOWN_FORMAT 3
-#define DSV_UNKNOWN_PRESENT_MODE 4
-#define DSV_FAILED_TO_LOAD_VERTEX_SHADER 5
-#define DSV_FAILED_TO_LOAD_FRAGMENT_SHADER 6
+#define DSV_UNKNOWN_FORMAT 4
+#define DSV_UNKNOWN_PRESENT_MODE 5
+#define DSV_FAILED_TO_LOAD_VERTEX_SHADER 6
+#define DSV_FAILED_TO_LOAD_FRAGMENT_SHADER 7
 
 namespace DSV {
 	VkSurfaceFormatKHR GetSurfaceFormat(std::vector<VkSurfaceFormatKHR> formats, VkFormat requiredFormat);
@@ -31,7 +31,6 @@ namespace DSV {
 			GraphicVulkanApplication() : GraphicVulkanApplication("Generic DSV Vulkan Application","No Engine",VK_MAKE_VERSION(1,0,0),VK_MAKE_VERSION(1,0,0)) {};
 			GraphicVulkanApplication(const char * applicationName, const char * engineName, uint32_t applicationVersion, uint32_t engineVersion); 
 			~GraphicVulkanApplication();
-
 
 			VkSurfaceCapabilitiesKHR GetSurfaceCapabilities(int physicalDeviceIndex);
 			std::vector<VkSurfaceFormatKHR> GetSurfaceFormats(int physicalDeviceIndex);
@@ -101,8 +100,6 @@ namespace DSV {
 			std::vector<char> m_vertexShader;
 			std::vector<char> m_fragmentShader;
 			std::vector<VkFramebuffer> m_pSwapChainFramebuffers;
-			VkCommandPool m_pCommandPool;
-			VkCommandPoolCreateInfo m_commandPoolCreateInfo;
 	};
 }
 

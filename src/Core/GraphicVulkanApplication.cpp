@@ -57,7 +57,6 @@ namespace DSV {
 		m_subpass = {};
 		m_renderPassCreateInfo = {};
 	  	m_pipelineCreateInfo = {};
-		m_CommandPoolCreateInfo = {};
 
 		m_imageViewsCreateInfo = std::vector<VkImageViewCreateInfo>(0);
 	};
@@ -416,7 +415,6 @@ namespace DSV {
 	}
 
 	void GraphicVulkanApplication::CreateFramebuffers() {
-		
 		for(size_t i = 0; i < m_framebufferCreateInfos.size(); i++) {
 			VkResult result = vkCreateFramebuffer(m_pDevice, &m_framebufferCreateInfos[i], nullptr, &m_pSwapChainFramebuffers[i]);
 			if (result != VK_SUCCESS) {
@@ -425,11 +423,12 @@ namespace DSV {
 		}
 	}
 
-	void GraphicVulkanApplication::CreateCommandPool() {
-		uint32_t index;
-		for (const auto family : app.GetQueueFamilies(physicalDevice)) {
-			std::cout << "\tQueue Family: " << family.queueFlags << "\n";
-		}
+	void GraphicVulkanApplication::CreateCommandPool(VkQueueFlagBits flags) {
+		m_commandPoolCreateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+		m_commandPoolCreateInfo.queueFamilyIndex = this.GetRequiredFamilyIndex(flags);
+		m_commandPoolCreateInfo.flags = 0;
+
+		VkResult result = vkCreateCommandPool(m_pDevice, &m_commandPoolCreateInfo, nullptr, &m_pCommandPool);
 	}
 
 	void GraphicVulkanApplication::CreateImageViews() {

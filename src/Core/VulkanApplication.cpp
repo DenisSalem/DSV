@@ -94,6 +94,7 @@ namespace DSV {
 	  	m_pInstance = nullptr;
 	  	m_pDevice = nullptr;
 		m_pCallback = nullptr;
+		m_pCommandPool = nullptr;
 		m_physicalDevices = std::vector<VkPhysicalDevice>(0);
 		m_queueCreateInfos = std::vector<VkDeviceQueueCreateInfo>(0);
 		m_queuePriorities = std::vector<std::vector<float>>(0);
@@ -102,6 +103,7 @@ namespace DSV {
 		m_callbackCreateInfo = {};
 	  	m_deviceFeatures = {};
 		m_appInfo = {};
+		m_CommandPoolCreateInfo = {};
 		
 		m_appInfo.pApplicationName = applicationName;
 		m_appInfo.applicationVersion = applicationVersion;
@@ -111,6 +113,10 @@ namespace DSV {
 	}
 
 	VulkanApplication::~VulkanApplication() {
+		if (m_pCommandPool != nullptr) {
+			vkDestroyCommandPool(m_pDevice, m_pCommandPool ,nullptr);
+		}
+
 	  	if (m_pDevice != nullptr) {
 			vkDestroyDevice(m_pDevice, nullptr);
 		}
@@ -215,6 +221,33 @@ namespace DSV {
 		}
 		else {
 			throw Exception(VK_ERROR_EXTENSION_NOT_PRESENT, DSV_MSG_FAILED_TO_CREATE_CALLBACK);
+		}
+	}
+
+	uint32_t VulkanApplication::GetRequiredQueueFamilyIndex(VkQueueFlagBits flags) {
+		uint32_t index = 0;
+		bool queueMatch = false
+		for (const auto family : this.GetQueueFamilies(physicalDevice)) {
+		  	if(family.queueFlags & flags == flags) {
+			  	queueMatch = true;
+				break;
+			}
+			index++;
+		}
+		if (queueMatch != true) {
+			throw Exception(DSV_REQUIRED_QUEUE_FAMILY_MISSING, DSV_MSG_REQUIRED_QUEUE_FAMILY_MISSING);
+		}
+		return index;
+	}
+
+	void GraphicVulkanApplication::CreateCommandPool(VkQueueFlagBits flags) {
+		m_commandPoolCreateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+		m_commandPoolCreateInfo.queueFamilyIndex = this.GetRequiredFamilyIndex(flags);
+		m_commandPoolCreateInfo.flags = 0;
+
+		VkResult result = vkCreateCommandPool(m_pDevice, &m_commandPoolCreateInfo, nullptr, &m_pCommandPool);
+		if(result != VK_SUCCESS) {
+			throw Exception(result, DSV_MSG_FAILED_TO_CREATE_COMMAND_POOL);
 		}
 	}
 
