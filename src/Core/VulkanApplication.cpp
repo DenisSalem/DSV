@@ -98,9 +98,11 @@ namespace DSV {
 		m_physicalDevices = std::vector<VkPhysicalDevice>(0);
 		m_queueCreateInfos = std::vector<VkDeviceQueueCreateInfo>(0);
 		m_queuePriorities = std::vector<std::vector<float>>(0);
+		m_pCommandBuffers = std::vector<VkCommandBuffer>(0);
 		m_instanceCreateInfo = {};
 		m_deviceCreateInfo = {};
 		m_callbackCreateInfo = {};
+		m_commandBufferAllocInfo = {};
 	  	m_deviceFeatures = {};
 		m_appInfo = {};
 		m_commandPoolCreateInfo = {};
@@ -252,6 +254,19 @@ namespace DSV {
 		VkResult result = vkCreateCommandPool(m_pDevice, &m_commandPoolCreateInfo, nullptr, &m_pCommandPool);
 		if(result != VK_SUCCESS) {
 			throw Exception(result, DSV_MSG_FAILED_TO_CREATE_COMMAND_POOL);
+		}
+	}
+	
+	void VulkanApplication::CreateCommandsBuffer(uint32_t bufferSize) {
+		m_pCommandBuffers.resize(bufferSize);
+		m_commandBufferAllocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+		m_commandBufferAllocInfo.commandPool = m_pCommandPool;
+		m_commandBufferAllocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+		m_commandBufferAllocInfo.commandBufferCount = bufferSize;
+
+		VkResult result = vkAllocateCommandBuffers(m_pDevice, &m_commandBufferAllocInfo, m_pCommandBuffers.data());
+		if ( result != VK_SUCCESS) {
+    			throw Exception(result, DSV_MSG_FAILED_TO_ALLOCATE_COMMAND_BUFFERS);
 		}
 	}
 

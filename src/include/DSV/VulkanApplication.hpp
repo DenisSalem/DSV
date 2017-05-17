@@ -14,6 +14,7 @@
 #define DSV_MSG_QUEUE_FAMILY_INDEX_DEFINED_TWICE "DSV: Queue family index defined twice!"
 #define DSV_MSG_REQUIRED_QUEUE_FAMILY_MISSING "DSV: Required queue family missing!"
 #define DSV_MSG_FAILED_TO_CREATE_COMMAND_POOL "DSV: Failed to create command pool!"
+#define DSV_MSG_FAILED_TO_ALLOCATE_COMMAND_BUFFERS "DSV: Failed to allocate command buffers!"
 
 #define DSV_MSG_AVAILABLE_INSTANCE_LAYERS "DSV: Available instance layers:\n"
 #define DSV_MSG_AVAILABLE_INSTANCE_EXTENSIONS "DSV: Available instance extensions:\n"
@@ -67,6 +68,7 @@ namespace DSV {
 			void InitVulkan();
 			uint32_t GetRequiredQueueFamilyIndex(VkQueueFlagBits flags);	
 			void CreateCommandPool(VkQueueFlagBits flags);
+			void CreateCommandsBuffer(uint32_t bufferSize);
 
 			VkInstance GetInstance();
 			
@@ -74,10 +76,12 @@ namespace DSV {
 			int m_physicalDeviceIndex;
 			std::vector<const char *> m_requiredExtensions;
 			std::vector<const char *> m_requiredLayers;
-			std::vector<VkCommandBuffer> commandBuffers;
+			std::vector<VkCommandBuffer> m_pCommandBuffers;
 			std::vector<VkDeviceQueueCreateInfo> m_queueCreateInfos;
 			std::vector< std::vector<float> > m_queuePriorities;
 			std::vector<VkPhysicalDevice> m_physicalDevices;
+
+			VkCommandBufferAllocateInfo m_commandBufferAllocInfo;
 			VkInstance m_pInstance;
 			VkDevice m_pDevice;
  			VkApplicationInfo m_appInfo;
