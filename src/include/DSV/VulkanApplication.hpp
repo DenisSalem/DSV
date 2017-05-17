@@ -67,9 +67,10 @@ namespace DSV {
 			void InitVulkan(std::vector<const char *> requiredExtensions, std::vector<const char *> requiredLayers);
 			void InitVulkan();
 			uint32_t GetRequiredQueueFamilyIndex(VkQueueFlagBits flags);	
-			void CreateCommandPool(VkQueueFlagBits flags);
-			void CreateCommandsBuffer(uint32_t bufferSize);
-
+			void AddCommandPool(uint32_t queueFamilyIndex);
+			void DeleteCommandPool(uint32_t index);
+			void CreateCommandBuffers(uint32_t bufferSize, uint32_t commandPoolIndex);
+			void BeginCommandBuffer(uint32_t bufferIndex, VkCommandBufferUsageFlags flags);
 			VkInstance GetInstance();
 			
 		protected:
@@ -91,7 +92,7 @@ namespace DSV {
 			VkDebugReportCallbackEXT m_pCallback;
 			VkPhysicalDeviceFeatures m_deviceFeatures;
 			
-			VkCommandPool m_pCommandPool;
+			std::vector<VkCommandPool> m_pCommandPools;
 			VkCommandPoolCreateInfo m_commandPoolCreateInfo;
 	};
 }

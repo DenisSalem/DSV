@@ -94,7 +94,7 @@ namespace DSV {
 	  	m_pInstance = nullptr;
 	  	m_pDevice = nullptr;
 		m_pCallback = nullptr;
-		m_pCommandPool = nullptr;
+		m_pCommandPools = std::vector<VkCommandPool>(0);
 		m_physicalDevices = std::vector<VkPhysicalDevice>(0);
 		m_queueCreateInfos = std::vector<VkDeviceQueueCreateInfo>(0);
 		m_queuePriorities = std::vector<std::vector<float>>(0);
@@ -117,8 +117,10 @@ namespace DSV {
 	}
 
 	VulkanApplication::~VulkanApplication() {
-		if (m_pCommandPool != nullptr) {
-			vkDestroyCommandPool(m_pDevice, m_pCommandPool ,nullptr);
+	  	for (size_t i = 0; i < m_pCommandPools.size(); i++) {
+			if (m_pCommandPools[i] != nullptr) {
+				vkDestroyCommandPool(m_pDevice, m_pCommandPools[i], nullptr);
+			}
 		}
 
 	  	if (m_pDevice != nullptr) {
@@ -131,6 +133,41 @@ namespace DSV {
 		}
 
 		vkDestroyInstance(m_pInstance, nullptr);
+	}
+
+	void VulkanApplication::InitVulkan() {
+		InitVulkan(std::vector<const char *>(0), std::vector<const char *>(0));
+	}
+
+	void VulkanApplication::InitVulkan(std::vector<const char *> requiredExtensions, std::vector<const char *> requiredLayers) {
+	  	m_requiredExtensions = requiredExtensions;
+	  	m_requiredLayers = requiredLayers;
+		m_appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+		m_appInfo.pNext = nullptr;
+		m_appInfo.apiVersion = VK_API_VERSION_1_0;
+
+		m_instanceCreateInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+		m_instanceCreateInfo.pNext = nullptr;
+		m_instanceCreateInfo.flags = 0;
+		m_instanceCreateInfo.pApplicationInfo = &m_appInfo;
+		m_instanceCreateInfo.enabledLayerCount = requiredLayers.size();
+		m_instanceCreateInfo.ppEnabledLayerNames = requiredLayers.data();
+		m_instanceCreateInfo.enabledExtensionCount = requiredExtensions.size();
+		m_instanceCreateInfo.ppEnabledExtensionNames = requiredExtensions.data();
+
+		PFN_vkCreateInstance vkCreateInstance = (PFN_vkCreateInstance) vkGetInstanceProcAddr(nullptr, "vkCreateInstance");
+		VkResult result = vkCreateInstance(&m_instanceCreateInfo, nullptr, &m_pInstance);
+		if (result != VK_SUCCESS) {
+    			throw Exception(result, DSV_MSG_FAILED_TO_CREATE_INSTANCE, m_appInfo.pApplicationName);
+		}
+
+		uint32_t deviceCount = 0;
+		vkEnumeratePhysicalDevices(m_pInstance, &deviceCount, nullptr);
+		if (deviceCount == 0) {
+			throw Exception(DSV_NO_PHYSICAL_DEVICES, DSV_MSG_NO_PHYSICAL_DEVICES);
+		}
+		m_physicalDevices.resize(deviceCount);
+		vkEnumeratePhysicalDevices(m_pInstance, &deviceCount, m_physicalDevices.data());
 	}
 
 	void VulkanApplication::PrintPhysicalDevices() {
@@ -188,7 +225,6 @@ namespace DSV {
 
 		}
 		return pProperties;
-		
 	}
 
 	void VulkanApplication::CreateLogicalDevice(int physicalDeviceIndex) {
@@ -242,25 +278,33 @@ namespace DSV {
 		if (queueMatch != true | flags == 0) {
 			throw Exception(DSV_REQUIRED_QUEUE_FAMILY_MISSING, DSV_MSG_REQUIRED_QUEUE_FAMILY_MISSING);
 		}
-		std::cout << index << " " << flags << "\n";
 		return index;
 	}
 
-	void VulkanApplication::CreateCommandPool(VkQueueFlagBits flags) {
+	void VulkanApplication::AddCommandPool(uint32_t queueFamilyIndex) {
 		m_commandPoolCreateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-		m_commandPoolCreateInfo.queueFamilyIndex = this->GetRequiredQueueFamilyIndex(flags);
+		m_commandPoolCreateInfo.queueFamilyIndex = queueFamilyIndex;
 		m_commandPoolCreateInfo.flags = 0;
 
-		VkResult result = vkCreateCommandPool(m_pDevice, &m_commandPoolCreateInfo, nullptr, &m_pCommandPool);
+		m_pCommandPools.push_back(nullptr);
+
+		VkResult result = vkCreateCommandPool(m_pDevice, &m_commandPoolCreateInfo, nullptr, &m_pCommandPools.at(m_pCommandPools.size()-1));
 		if(result != VK_SUCCESS) {
 			throw Exception(result, DSV_MSG_FAILED_TO_CREATE_COMMAND_POOL);
 		}
 	}
+
+	void VulkanApplication::DeleteCommandPool(uint32_t index) {
+		if (m_pCommandPools[index] != nullptr) {
+			vkDestroyCommandPool(m_pDevice, m_pCommandPools.at(index), nullptr);
+		}
+		m_pCommandPools.erase(m_pCommandPools.begin() + index);
+	}
 	
-	void VulkanApplication::CreateCommandsBuffer(uint32_t bufferSize) {
+	void VulkanApplication::CreateCommandBuffers(uint32_t bufferSize, uint32_t commandPoolIndex) {
 		m_pCommandBuffers.resize(bufferSize);
 		m_commandBufferAllocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-		m_commandBufferAllocInfo.commandPool = m_pCommandPool;
+		m_commandBufferAllocInfo.commandPool = m_pCommandPools.at(commandPoolIndex);
 		m_commandBufferAllocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
 		m_commandBufferAllocInfo.commandBufferCount = bufferSize;
 
@@ -270,38 +314,11 @@ namespace DSV {
 		}
 	}
 
-	void VulkanApplication::InitVulkan() {
-		InitVulkan(std::vector<const char *>(0), std::vector<const char *>(0));
-	}
-
-	void VulkanApplication::InitVulkan(std::vector<const char *> requiredExtensions, std::vector<const char *> requiredLayers) {
-	  	m_requiredExtensions = requiredExtensions;
-	  	m_requiredLayers = requiredLayers;
-		m_appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-		m_appInfo.pNext = nullptr;
-		m_appInfo.apiVersion = VK_API_VERSION_1_0;
-
-		m_instanceCreateInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-		m_instanceCreateInfo.pNext = nullptr;
-		m_instanceCreateInfo.flags = 0;
-		m_instanceCreateInfo.pApplicationInfo = &m_appInfo;
-		m_instanceCreateInfo.enabledLayerCount = requiredLayers.size();
-		m_instanceCreateInfo.ppEnabledLayerNames = requiredLayers.data();
-		m_instanceCreateInfo.enabledExtensionCount = requiredExtensions.size();
-		m_instanceCreateInfo.ppEnabledExtensionNames = requiredExtensions.data();
-
-		PFN_vkCreateInstance vkCreateInstance = (PFN_vkCreateInstance) vkGetInstanceProcAddr(nullptr, "vkCreateInstance");
-		VkResult result = vkCreateInstance(&m_instanceCreateInfo, nullptr, &m_pInstance);
-		if (result != VK_SUCCESS) {
-    			throw Exception(result, DSV_MSG_FAILED_TO_CREATE_INSTANCE, m_appInfo.pApplicationName);
-		}
-
-		uint32_t deviceCount = 0;
-		vkEnumeratePhysicalDevices(m_pInstance, &deviceCount, nullptr);
-		if (deviceCount == 0) {
-			throw Exception(DSV_NO_PHYSICAL_DEVICES, DSV_MSG_NO_PHYSICAL_DEVICES);
-		}
-		m_physicalDevices.resize(deviceCount);
-		vkEnumeratePhysicalDevices(m_pInstance, &deviceCount, m_physicalDevices.data());
+	void VulkanApplication::BeginCommandBuffer(uint32_t bufferIndex, VkCommandBufferUsageFlags flags) {
+		VkCommandBufferBeginInfo beginInfo = {};
+		beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+		beginInfo.flags = flags;
+		beginInfo.pInheritanceInfo = nullptr; // Optional
+		vkBeginCommandBuffer(m_pCommandBuffers.at(bufferIndex), &beginInfo);
 	}
 }

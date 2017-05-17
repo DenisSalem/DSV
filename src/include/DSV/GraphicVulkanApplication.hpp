@@ -26,6 +26,7 @@
 namespace DSV {
 	VkSurfaceFormatKHR GetSurfaceFormat(std::vector<VkSurfaceFormatKHR> formats, VkFormat requiredFormat);
 	VkPresentModeKHR GetSurfacePresentMode(std::vector<VkPresentModeKHR>, VkPresentModeKHR requiredPresentMode);
+	
 	class GraphicVulkanApplication : public VulkanApplication {
 		public:
 			GraphicVulkanApplication() : GraphicVulkanApplication("Generic DSV Vulkan Application","No Engine",VK_MAKE_VERSION(1,0,0),VK_MAKE_VERSION(1,0,0)) {};
@@ -54,6 +55,11 @@ namespace DSV {
 			void CreateDefaultPipeline();
 			void DefaultFramebuffersSetup();
 			void CreateFramebuffers();
+			void DefaultRenderingCommandRecording();
+
+			void BeginRenderPass(); // Must be refactored
+			void BindPipeline(); // Must be refactored
+			void EndRenderPass(); // Must be refactored
 
 		protected:
 			void CreateShader(std::vector<char> shader, VkShaderModule * shaderModule);

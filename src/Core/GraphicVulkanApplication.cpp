@@ -433,7 +433,39 @@ namespace DSV {
 		}
 	}
 
+	void GraphicVulkanApplication::BeginRenderPass() {
+		VkRenderPassBeginInfo renderPassInfo = {};
+		renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+		renderPassInfo.renderPass = m_pRenderPass;
+		renderPassInfo.framebuffer = m_pSwapChainFramebuffers[0];
+
+		renderPassInfo.renderArea.offset = {0, 0};
+		renderPassInfo.renderArea.extent = m_surfaceExtent;
+
+		VkClearValue clearColor = {0.0f, 0.0f, 0.0f, 1.0f};
+		renderPassInfo.clearValueCount = 1;
+		renderPassInfo.pClearValues = &clearColor;
+		
+		vkCmdBeginRenderPass(m_pCommandBuffers.at(0), &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+	}
+
+	void GraphicVulkanApplication::BindPipeline() {
+		vkCmdBindPipeline(m_pCommandBuffers.at(0), VK_PIPELINE_BIND_POINT_GRAPHICS, m_pPipeline);
+		vkCmdDraw(m_pCommandBuffers.at(0), 3, 1, 0, 0);
+	}
+
+	void GraphicVulkanApplication::EndRenderPass() {
+		vkCmdEndRenderPass(m_pCommandBuffers.at(0));
+		if (vkEndCommandBuffer(m_pCommandBuffers.at(0)) != VK_SUCCESS) {
+    			throw Exception(0, "DSV: failed to record command buffer!");
+		}
+	}
+
 	VkSurfaceKHR GraphicVulkanApplication::GetSurface() {
 		return m_pSurface;
+	}
+
+	void GraphicVulkanApplication::DefaultRenderingCommandRecording() {
+	
 	}
 }
