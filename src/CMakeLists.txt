@@ -2,11 +2,15 @@ cmake_minimum_required (VERSION 3.7)
 
 project(DSV)
 
-set(SRC_FILES "Core/VulkanApplication.cpp" "Core/GraphicVulkanApplication.cpp")
+set(
+	SRC_FILES
+	"Core/VulkanApplication.cpp"
+	"Core/VulkanHandler.cpp"
+)
 
 set(EXTRA_DEPENDENCIES "-lvulkan")
 
-include_directories("include")
+include_directories("include/Core")
 
 add_library(${PROJECT_NAME} ${SRC_FILES})
 
