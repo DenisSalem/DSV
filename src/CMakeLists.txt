@@ -4,13 +4,16 @@ project(DSV)
 
 set(
 	SRC_FILES
-	"Core/VulkanApplication.cpp"
-	"Core/VulkanHandler.cpp"
+	"Core/VulkanHandlers.cpp"
+	"Core/VulkanHelpers.cpp"
 )
 
-set(EXTRA_DEPENDENCIES "-lvulkan")
+set(
+	EXTRA_DEPENDENCIES
+	"-lvulkan"
+)
 
-include_directories("include/Core")
+include_directories("include")
 
 add_library(${PROJECT_NAME} ${SRC_FILES})
 

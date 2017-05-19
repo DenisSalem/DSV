@@ -1,18 +1,6 @@
 #include "DSV/VulkanApplication.hpp"
 
 namespace DSV {
-
-	std::vector<VkLayerProperties> GetInstanceLayers() {
-	  	uint32_t propertiesCount = 0;
-		std::vector<VkLayerProperties> pProperties;
-		vkEnumerateInstanceLayerProperties(&propertiesCount, nullptr);
-		if (propertiesCount != 0) {
-		  	pProperties.resize(propertiesCount);
-			vkEnumerateInstanceLayerProperties(&propertiesCount, pProperties.data());
-		}
-		return pProperties;
-	}
-
 	std::vector<VkExtensionProperties> GetInstanceExtensions(const char * pLayerName) {
 	  	uint32_t propertiesCount = 0;
 		std::vector<VkExtensionProperties> pProperties;
@@ -58,6 +46,7 @@ namespace DSV {
 
 		return true;
 	}
+
 	bool IsInstanceExtensionsAvailable(std::vector<const char *> required) {
 		std::vector<VkExtensionProperties> supported = GetInstanceExtensions(nullptr);
 		for (const auto& r : required) {

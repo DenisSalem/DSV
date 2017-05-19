@@ -1,4 +1,4 @@
-#include "DSV/VulkanApplication.hpp"
+#include "DSV/Core.hpp"
 
 #define EXAMPLE_DEBUG
 
@@ -9,18 +9,6 @@ const std::vector<const char *> requiredInstanceLayers {"VK_LAYER_LUNARG_standar
 const std::vector<const char *> requiredInstanceExtensions {};
 const std::vector<const char *> requiredInstanceLayers {};
 #endif
-
-// Define custom DSV::VulkanApplication
-class FirstVulkanApplication : public DSV::VulkanApplication {
-	public:
-		FirstVulkanApplication(const char * applicationName, const char * engineName, uint32_t applicationVersion, uint32_t engineVersion) : VulkanApplication(applicationName, engineName, applicationVersion, engineVersion) {
-			std::cout << "Vulkan application created.\n";
-		};
-		
-		~FirstVulkanApplication() {
-			std::cout << "Vulkan application destroyed.\n";
-		};
-};
 
 // Define custom debug callback 
 VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
@@ -40,39 +28,24 @@ VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
 
 int main(int argc, char ** argv) {
 	try {
-	  	// Instancing but not initiating yet...
-		FirstVulkanApplication app("FirstVulkanApplication" , "None", VK_MAKE_VERSION(0,0,0), VK_MAKE_VERSION(0,0,0));
+		VkInstance instance;
+
+		VkApplicationInfo appInfo = {};
+		appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+		appInfo.pApplicationName = "Hello Triangle";
+		appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
+		appInfo.pEngineName = "No Engine";
+		appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
+		appInfo.apiVersion = VK_API_VERSION_1_0;
 		
-		// Printing out layers and extensions capabilities...
-		DSV::PrintLayers(DSV_MSG_AVAILABLE_INSTANCE_LAYERS, DSV::GetInstanceLayers());
-		DSV::PrintExtensions(DSV_MSG_AVAILABLE_INSTANCE_EXTENSIONS, DSV::GetInstanceExtensions(nullptr));
+		VkInstanceCreateInfo createInfo = {};
 
-		// Initiating...
-		if ( DSV::IsInstanceLayersAvailable(requiredInstanceLayers) && DSV::IsInstanceExtensionsAvailable(requiredInstanceExtensions)) {
-			#ifdef EXAMPLE_DEBUG
-				app.InitVulkan(requiredInstanceExtensions,requiredInstanceLayers);
-				app.SetupCallback(VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT, debugCallback);
-			#else
-				app.InitVulkan();
-			#endif
-			app.PrintPhysicalDevices();
+		createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+		createInfo.pApplicationInfo = &appInfo;
 
-			// This is where you should do something with...
-			
-			app.GetPhysicalDevices();
-			int physicalDevice = 0;	// 0 is the default for the example. For real application you should choose wisely.
-			DSV::PrintExtensions(DSV_MSG_AVAILABLE_DEVICE_EXTENSIONS, app.GetDeviceExtensions(physicalDevice, nullptr));
-			
-			app.GetQueueFamilies(physicalDevice);
-			int queueFamily = 0; // 0 is the default for the example. For real application you should choose wisely.
-			app.AddQueueFamily(queueFamily,3,std::vector<float>({0.70,0.15,0.15}));
-			
-			app.CreateLogicalDevice(physicalDevice);
-		}
-		else {
-			std::cout << "Required layers or extensions aren't supported... :(\n";
-		}
-	} catch (const DSV::Exception& e) {
+		DSV::Core::InstanceHandler Instance(createInfo, nullptr);
+
+	} catch (const DSV::Core::Exception& e) {
         	std::cerr << e.msg << std::endl;
 		return EXIT_FAILURE;
 	}

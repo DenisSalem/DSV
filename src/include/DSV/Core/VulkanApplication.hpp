@@ -28,27 +28,6 @@
 #define DSV_TRACE { std::cerr << "DSV_TRACE: "<< __FILE__ << ", " << __LINE__ << "\n"; } 
 
 namespace DSV {
-	
-	
-	std::vector<VkLayerProperties> GetInstanceLayers();
-	std::vector<VkExtensionProperties> GetInstanceExtensions(const char * pLayerName);
-	
-	void PrintLayers(const char * header, std::vector<VkLayerProperties> pProperties);
-	void PrintExtensions(const char * header, std::vector<VkExtensionProperties> pProperties);
-	
-	bool IsInstanceLayersAvailable(std::vector<const char *> required);
-	bool IsInstanceExtensionsAvailable(std::vector<const char *> required);
-
-	struct Exception {
-		Exception(int code, const char * msg);
-		Exception(int code, const char * msg, const char * context);
-
-		int code;
-		
-		std::string msg;
-		std::string context;
-	};
-
 	class VulkanApplication {
 		public:
 			VulkanApplication() : VulkanApplication("Generic DSV Vulkan Application","No Engine",VK_MAKE_VERSION(1,0,0),VK_MAKE_VERSION(1,0,0)) {};
