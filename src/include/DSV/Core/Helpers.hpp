@@ -11,6 +11,9 @@
 #define DSV_MSG_REQUIRED_LAYERS_UNAVAILABLE "DSV: One ore more required layers are unavailable!"
 #define DSV_MSG_REQUIRED_EXTENSIONS_UNAVAILABLE "DSV: On ore more required extensions are unavailable!"
 
+
+#define DSV_CALLBACK_REPORT_ALL VK_DEBUG_REPORT_INFORMATION_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT | VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT | VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_DEBUG_BIT_EXT
+
 namespace DSV {
 	namespace Core {
 
@@ -18,6 +21,17 @@ namespace DSV {
 			REQUIRED_LAYERS_UNAVAILABLE,
 			REQUIRED_EXTENSIONS_UNAVAILABLE
 		} HelpersErrorCode;
+		
+		VKAPI_ATTR VkBool32 VKAPI_CALL DefaultDebugCallback(
+			VkDebugReportFlagsEXT flags,
+			VkDebugReportObjectTypeEXT objType,
+			uint64_t obj,
+			size_t location,
+			int32_t code,
+			const char* layerPrefix,
+			const char* msg,
+			void* userData
+		);
 
 		std::vector<VkLayerProperties> GetInstanceLayers();
 		std::vector<VkExtensionProperties> GetInstanceExtensions(const char * pLayerName);

@@ -3,6 +3,8 @@
 #ifndef DSV_INSTANCE
 #define DSV_INSTANCE
 
+#define DSV_MSG_FAILED_TO_CREATE_INSTANCE "DSV: Failed to create instance!"
+
 namespace DSV {
 	namespace Core {
 		class Instance : public RessourceManager<VkInstance, VkInstanceCreateInfo> {

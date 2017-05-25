@@ -36,6 +36,8 @@ namespace DSV {
 			std::vector<const char *> requiredInstanceExtensions, 
 			std::vector<const char *> requiredInstanceLayers
 		) : RessourceManager(vkCreateInstance, vkDestroyInstance) {
+		  	m_msgFailedToCreate = DSV_MSG_FAILED_TO_CREATE_INSTANCE;
+
 		  	m_applicationInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
 			m_applicationInfo.pApplicationName = applicationName;
 			m_applicationInfo.applicationVersion = applicationVersion;
@@ -43,9 +45,12 @@ namespace DSV {
 			m_applicationInfo.engineVersion = engineVersion;
 			m_applicationInfo.apiVersion = VK_API_VERSION_1_0;
 
-
 			m_createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 			m_createInfo.pApplicationInfo = &this->m_applicationInfo;
+			m_createInfo.enabledExtensionCount = requiredInstanceExtensions.size();
+			m_createInfo.ppEnabledExtensionNames = requiredInstanceExtensions.data();
+			m_createInfo.enabledLayerCount = requiredInstanceLayers.size();
+			m_createInfo.ppEnabledLayerNames = requiredInstanceLayers.data();
 
 			Create();
 		}

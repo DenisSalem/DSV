@@ -7,6 +7,7 @@ set(
 	"Core/Helpers.cpp"
 	"Core/RessourceManager.cpp"
 	"Core/Instance.cpp"
+	"Core/Callback.cpp"
 )
 
 set(
