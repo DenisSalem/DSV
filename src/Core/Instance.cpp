@@ -37,6 +37,7 @@ namespace DSV {
 			std::vector<const char *> requiredInstanceLayers
 		) : RessourceManager(vkCreateInstance, vkDestroyInstance) {
 		  	m_msgFailedToCreate = DSV_MSG_FAILED_TO_CREATE_INSTANCE;
+			m_physicalDevices = std::vector<VkPhysicalDevice>();
 
 		  	m_applicationInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
 			m_applicationInfo.pApplicationName = applicationName;
@@ -53,6 +54,9 @@ namespace DSV {
 			m_createInfo.ppEnabledLayerNames = requiredInstanceLayers.data();
 
 			Create();
+			SetPhysicalDevices();
+
+			
 		}
 
 		std::string Instance::GetApplicationName() {
@@ -69,6 +73,29 @@ namespace DSV {
 
 		uint32_t Instance::GetEngineVersion() {
 			return m_applicationInfo.engineVersion;
+		}
+
+		std::vector<VkPhysicalDevice> Instance::GetPhysicalDevices() {
+			return m_physicalDevices;
+		}
+
+		std::vector<VkPhysicalDeviceProperties> Instance::GetPhysicalDevicesProperties() {
+			
+			std::vector<VkPhysicalDeviceProperties> physicalDevicesProperties = std::vector<VkPhysicalDeviceProperties>();
+			for (const auto& device : m_physicalDevices) {
+			  	VkPhysicalDeviceProperties physicalDeviceProperties;
+				vkGetPhysicalDeviceProperties(device, &physicalDeviceProperties);
+				physicalDevicesProperties.push_back( physicalDeviceProperties );
+			}
+			return physicalDevicesProperties;
+
+		}
+	
+		void Instance::SetPhysicalDevices() {
+			uint32_t deviceCount = 0;
+			vkEnumeratePhysicalDevices(m_pHandler, &deviceCount, nullptr);
+			m_physicalDevices.resize(deviceCount);
+			vkEnumeratePhysicalDevices(m_pHandler, &deviceCount, m_physicalDevices.data());
 		}
 	}
 }

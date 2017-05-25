@@ -36,8 +36,7 @@ namespace DSV {
 		std::vector<VkLayerProperties> GetInstanceLayers();
 		std::vector<VkExtensionProperties> GetInstanceExtensions(const char * pLayerName);
 	
-		void PrintLayers(const char * header, std::vector<VkLayerProperties> pProperties);
-		void PrintExtensions(const char * header, std::vector<VkExtensionProperties> pProperties);
+		template<typename Properties> void PrintNamesFrom(std::vector<Properties> vProperties, const char * header);
 	
 		void AssertInstanceLayersAreAvailable(std::vector<const char *> required);
 		void AssertInstanceExtensionsAreAvailable(std::vector<const char *> required);

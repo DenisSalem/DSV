@@ -38,19 +38,33 @@ namespace DSV {
 			return pProperties;
 		}
 
-		void PrintLayers(const char * header, std::vector<VkLayerProperties> pProperties) {
-			std::cout << header;
-			for (const auto& layerProperties : pProperties) {
-				std::cout << "\t" << layerProperties.layerName << "\n";
+
+		const char * GetNameFromProperties(VkLayerProperties properties) {
+			const char * name = properties.layerName;
+			return name;
+		}
+
+		const char * GetNameFromProperties(VkExtensionProperties properties) {
+			const char * name =properties.extensionName;
+			return name;
+		}
+
+		const char * GetNameFromProperties(VkPhysicalDeviceProperties properties) {
+			const char * name =properties.deviceName;
+			return name;
+		}
+
+		template<typename Properties>
+		void PrintNamesFrom(std::vector<Properties> vProperties, const char * header) {
+			std::cout << header << "\n";
+			for (Properties properties : vProperties) {
+				std::cout << "\t" << GetNameFromProperties(properties) << "\n";
 			}
 		}
 
-		void PrintExtensions(const char * header, std::vector<VkExtensionProperties> pProperties) {
-			std::cout << header;
-			for (const auto& layerProperties : pProperties) {
-				std::cout << "\t" << layerProperties.extensionName << "\n";
-			}
-		}
+		template void PrintNamesFrom(std::vector<VkLayerProperties> vProperties, const char * header);
+		template void PrintNamesFrom(std::vector<VkExtensionProperties> vProperties, const char * header);
+		template void PrintNamesFrom(std::vector<VkPhysicalDeviceProperties> vProperties, const char * header);
 
 		void AssertInstanceLayersAreAvailable(std::vector<const char *> required) {
 			std::vector<VkLayerProperties> supported = GetInstanceLayers();

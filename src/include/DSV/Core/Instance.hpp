@@ -47,9 +47,13 @@ namespace DSV {
 				std::string GetEngineName();
 				uint32_t GetApplicationVersion();
 				uint32_t GetEngineVersion();
+				std::vector<VkPhysicalDevice> GetPhysicalDevices();
+				std::vector<VkPhysicalDeviceProperties> GetPhysicalDevicesProperties();
 			
 			protected:
+				void SetPhysicalDevices();
 				VkApplicationInfo m_applicationInfo;
+				std::vector<VkPhysicalDevice> m_physicalDevices;
 		};
 	}
 }
