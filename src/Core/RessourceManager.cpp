@@ -16,7 +16,7 @@ namespace DSV {
 			};
 
 			this->Destroy = [this,destroy](){
-			  	//destroy(this->m_pHandler, this->m_pAllocationCallbacks);
+			  	destroy(this->m_pHandler, this->m_pAllocationCallbacks);
 			};
 		}
 

@@ -5,11 +5,15 @@ const std::vector<const char *> requiredInstanceLayers {"VK_LAYER_LUNARG_standar
 
 int main(int argc, char ** argv) {
 	try {
+		// Printing out layers and extensions capabilities...
+		DSV::Core::PrintLayers("Available instance layers:\n", DSV::Core::GetInstanceLayers());
+		DSV::Core::PrintExtensions("Available instance extensions:\n", DSV::Core::GetInstanceExtensions(nullptr));
+		
 		// We first check if both required instance extensions and instance layers are available.
 		DSV::Core::AssertInstanceExtensionsAreAvailable(requiredInstanceExtensions);
 		DSV::Core::AssertInstanceLayersAreAvailable(requiredInstanceLayers);
 
-		DSV::Core::Instance * instance = new DSV::Core::Instance(
+		DSV::Core::Instance instance(
 			"Hello App",			// Application Name 
 			VK_MAKE_VERSION(1, 0, 0),	// Application Version
 			"No Engine",			// Engine Name
@@ -18,11 +22,7 @@ int main(int argc, char ** argv) {
 			requiredInstanceLayers		// Required Instance Layers
 		);
 
-		DSV::Core::Callback * callback = new DSV::Core::Callback(instance->GetHandler(), DSV_CALLBACK_REPORT_ALL, DSV::Core::DefaultDebugCallback);
-
-		delete instance;
-		delete callback;
-
+		DSV::Core::Callback callback(instance.GetHandler(), DSV_CALLBACK_REPORT_ALL, DSV::Core::DefaultDebugCallback);
 	} catch (const DSV::Core::Exception& e) {
 		return EXIT_FAILURE;
 	}
