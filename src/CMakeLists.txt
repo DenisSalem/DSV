@@ -4,8 +4,9 @@ project(DSV)
 
 set(
 	SRC_FILES
-	"Core/VulkanHandlers.cpp"
-	"Core/VulkanHelpers.cpp"
+	"Core/Helpers.cpp"
+	"Core/RessourceManager.cpp"
+	"Core/Instance.cpp"
 )
 
 set(

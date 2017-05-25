@@ -1,5 +1,5 @@
-#ifndef DSV_VULKAN_HELPERS
-#define DSV_VULKAN_HELPERS
+#ifndef DSV_HELPERS
+#define DSV_HELPERS
 
 #include <iostream>
 #include <vector>
