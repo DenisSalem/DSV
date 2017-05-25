@@ -10,28 +10,22 @@ const std::vector<const char *> requiredInstanceExtensions {};
 const std::vector<const char *> requiredInstanceLayers {};
 #endif
 
-// Define custom debug callback 
-VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
-    VkDebugReportFlagsEXT flags,
-    VkDebugReportObjectTypeEXT objType,
-    uint64_t obj,
-    size_t location,
-    int32_t code,
-    const char* layerPrefix,
-    const char* msg,
-    void* userData) {
-
-    std::cerr << "validation layer: " << msg << std::endl;
-
-    return VK_FALSE;
-}
-
 int main(int argc, char ** argv) {
 	try {
-		DSV::Core::Instance instance("Hello App", VK_MAKE_VERSION(1, 0, 0), "No Engine", VK_MAKE_VERSION(1, 0, 0));
+		// We first check if both required instance extensions and instance layers are available.
+		DSV::Core::AssertInstanceExtensionsAreAvailable(requiredInstanceExtensions);
+		DSV::Core::AssertInstanceLayersAreAvailable(requiredInstanceLayers);
+
+		DSV::Core::Instance instance(
+			"Hello App",			// Application Name 
+			VK_MAKE_VERSION(1, 0, 0),	// Application Version
+			"No Engine",			// Engine Name
+			VK_MAKE_VERSION(1, 0, 0),	// Engine Version
+			requiredInstanceExtensions,	// Required Instance Extensions
+			requiredInstanceLayers		// Required Instance Layers
+		);
 
 	} catch (const DSV::Core::Exception& e) {
-        	std::cerr << e.msg << std::endl;
 		return EXIT_FAILURE;
 	}
 	

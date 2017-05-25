@@ -2,6 +2,19 @@
 
 namespace DSV {
 	namespace Core {
+		VKAPI_ATTR VkBool32 VKAPI_CALL DefaultDebugCallback(
+		VkDebugReportFlagsEXT flags,
+		VkDebugReportObjectTypeEXT objType,
+		uint64_t obj,
+		size_t location,
+		int32_t code,
+		const char* layerPrefix,
+		const char* msg,
+		void* userData) {
+			std::cerr << "Validation layer: " << msg << std::endl;
+			return VK_FALSE;
+		}
+
 		std::vector<VkLayerProperties> GetInstanceLayers() {
 		  	uint32_t propertiesCount = 0;
 			std::vector<VkLayerProperties> pProperties;
@@ -39,7 +52,7 @@ namespace DSV {
 			}
 		}
 
-		bool IsInstanceLayersAvailable(std::vector<const char *> required) {
+		void AssertInstanceLayersAreAvailable(std::vector<const char *> required) {
 			std::vector<VkLayerProperties> supported = GetInstanceLayers();
 			for (const auto& r : required) {
 				bool layerFound = false;
@@ -50,13 +63,12 @@ namespace DSV {
 					}
 				}
 				if (!layerFound) {
-					return false;
+					throw Exception(REQUIRED_LAYERS_UNAVAILABLE, DSV_MSG_REQUIRED_LAYERS_UNAVAILABLE);
 				}
 			}
-			return true;
 		}
 
-		bool IsInstanceExtensionsAvailable(std::vector<const char *> required) {
+		void AssertInstanceExtensionsAreAvailable(std::vector<const char *> required) {
 			std::vector<VkExtensionProperties> supported = GetInstanceExtensions(nullptr);
 			for (const auto& r : required) {
     				bool layerFound = false;
@@ -67,10 +79,9 @@ namespace DSV {
 					}
 				}
 				if (!layerFound) {
-					return false;
+					throw Exception(REQUIRED_EXTENSIONS_UNAVAILABLE,DSV_MSG_REQUIRED_EXTENSIONS_UNAVAILABLE);
 				}
 			}
-			return true;
 		}
 	
 		Exception::Exception(int code, const char* msg) : Exception(code, msg, NULL) {}
