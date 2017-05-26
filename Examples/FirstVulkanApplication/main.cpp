@@ -6,8 +6,8 @@ const std::vector<const char *> requiredInstanceLayers {"VK_LAYER_LUNARG_standar
 int main(int argc, char ** argv) {
 	try {
 		// Printing out layers and extensions capabilities...
-		//DSV::Core::PrintLayers("Available instance layers:\n", DSV::Core::GetInstanceLayers());
-		//DSV::Core::PrintExtensions("Available instance extensions:\n", DSV::Core::GetInstanceExtensions(nullptr));
+		DSV::Core::PrintNamesFrom(DSV::Core::GetInstanceLayers(), "Available instance layers:");
+		DSV::Core::PrintNamesFrom(DSV::Core::GetInstanceExtensions(nullptr), "Available instance extensions:");
 		
 		// We first check if both required instance extensions and instance layers are available.
 		DSV::Core::AssertInstanceExtensionsAreAvailable(requiredInstanceExtensions);

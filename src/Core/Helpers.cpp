@@ -39,19 +39,16 @@ namespace DSV {
 		}
 
 
-		const char * GetNameFromProperties(VkLayerProperties properties) {
-			const char * name = properties.layerName;
-			return name;
+		std::string GetNameFromProperties(VkLayerProperties properties) {
+			return std::string(properties.layerName);
 		}
 
-		const char * GetNameFromProperties(VkExtensionProperties properties) {
-			const char * name =properties.extensionName;
-			return name;
+		std::string GetNameFromProperties(VkExtensionProperties properties) {
+			return std::string(properties.extensionName);
 		}
 
-		const char * GetNameFromProperties(VkPhysicalDeviceProperties properties) {
-			const char * name =properties.deviceName;
-			return name;
+		std::string GetNameFromProperties(VkPhysicalDeviceProperties properties) {
+			return std::string(properties.deviceName);
 		}
 
 		template<typename Properties>
