@@ -90,7 +90,16 @@ namespace DSV {
 			return physicalDevicesProperties;
 
 		}
-	
+
+		uint32_t Instance::PickPhysicalDevice(std::function<uint32_t(std::vector<VkPhysicalDeviceProperties>)> picker) {
+			if (m_physicalDevices.size() == 1) {
+				return 0;
+			}
+			else {
+				return picker(GetPhysicalDevicesProperties());
+			}
+		}
+
 		void Instance::SetPhysicalDevices() {
 			uint32_t deviceCount = 0;
 			vkEnumeratePhysicalDevices(m_pHandler, &deviceCount, nullptr);

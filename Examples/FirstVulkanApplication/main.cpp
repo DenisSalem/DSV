@@ -24,7 +24,14 @@ int main(int argc, char ** argv) {
 		);
 
 		// Binding debug report callback to the instance
-		DSV::Core::Callback callback(instance.GetHandler(), DSV_CALLBACK_REPORT_ALL, DSV::Core::DefaultDebugCallback);
+		DSV::Core::Callback callback(instance.GetHandler(), VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT, DSV::Core::DefaultDebugCallback);
+
+		// Because it's fancy we can print out what are the available GPUs
+		DSV::Core::PrintNamesFrom(instance.GetPhysicalDevicesProperties(), "Available GPUs:");
+		
+		// Most of the time only one GPU is available, but we need to decide which one to use in case
+		// there would be more.
+		uint32_t physicalDeviceIndex = instance.PickPhysicalDevice([](std::vector<VkPhysicalDeviceProperties> properties) -> uint32_t { return 0; });
 
 
 

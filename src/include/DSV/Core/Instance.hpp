@@ -49,6 +49,7 @@ namespace DSV {
 				uint32_t GetEngineVersion();
 				std::vector<VkPhysicalDevice> GetPhysicalDevices();
 				std::vector<VkPhysicalDeviceProperties> GetPhysicalDevicesProperties();
+				uint32_t PickPhysicalDevice(std::function<uint32_t(std::vector<VkPhysicalDeviceProperties>)> picker);
 			
 			protected:
 				void SetPhysicalDevices();

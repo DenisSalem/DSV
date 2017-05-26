@@ -46,7 +46,6 @@ namespace DSV {
 
 	  	template <typename VkHandler, typename CreateInfo>
 		RessourceManager<VkHandler, CreateInfo>::~RessourceManager() {
-		  	std::cout << "Destroy " << typeid(VkHandler).name() <<"\n";
 			this->Destroy();
 		}
 
