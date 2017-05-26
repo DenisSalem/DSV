@@ -21,8 +21,8 @@ namespace DSV {
 				);
 
 				RessourceManager(
-					std::function<VkResult(VkDevice pDevice, CreateInfo *, VkAllocationCallbacks *, VkHandler *)> create,
-					std::function<void(VkDevice, VkHandler, VkAllocationCallbacks*)> destroy
+					std::function<VkResult(VkPhysicalDevice, CreateInfo *, VkAllocationCallbacks *, VkHandler *)> create,
+					std::function<void(VkHandler, VkAllocationCallbacks*)> destroy
 				);
 
 				~RessourceManager();
@@ -39,6 +39,7 @@ namespace DSV {
 				VkHandler m_pHandler;
 
 				VkInstance m_pInstance;
+				VkPhysicalDevice m_pPhysicalDevice;
 				VkDevice m_pDevice;
 				VkAllocationCallbacks * m_pAllocationCallbacks;
 

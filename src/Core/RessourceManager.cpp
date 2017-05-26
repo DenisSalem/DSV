@@ -1,4 +1,4 @@
-#include "DSV/Core/Helpers.hpp"
+#include "DSV/Helpers.hpp"
 #include "DSV/Core/RessourceManager.hpp"
 
 namespace DSV {
@@ -11,7 +11,7 @@ namespace DSV {
 			this->Create = [this, create]() {
 				VkResult result = create(&this->m_createInfo, this->m_pAllocationCallbacks, &this->m_pHandler);
 				if (result != VK_SUCCESS) {
-					throw Exception(result, this->m_msgFailedToCreate);
+					throw DSV::Helpers::Exception(result, this->m_msgFailedToCreate);
 				}
 			};
 
@@ -28,12 +28,29 @@ namespace DSV {
 			this->Create = [this, create]() {
 				VkResult result = create(this->m_pInstance, &this->m_createInfo, this->m_pAllocationCallbacks, &this->m_pHandler);
 				if (result != VK_SUCCESS) {
-					throw Exception(result, this->m_msgFailedToCreate);
+					throw DSV::Helpers::Exception(result, this->m_msgFailedToCreate);
 				}
 			};
 
 			this->Destroy = [this,destroy](){
 			  	destroy(this->m_pInstance, this->m_pHandler, this->m_pAllocationCallbacks);
+			};
+		}
+
+	  	template <typename VkHandler, typename CreateInfo>
+		RessourceManager<VkHandler, CreateInfo>::RessourceManager(
+			std::function<VkResult(VkPhysicalDevice, CreateInfo *, VkAllocationCallbacks *, VkHandler *)> create,
+			std::function<void(VkHandler, VkAllocationCallbacks*)> destroy
+		) : RessourceManager() {
+			this->Create = [this, create]() {
+				VkResult result = create(this->m_pPhysicalDevice, &this->m_createInfo, this->m_pAllocationCallbacks, &this->m_pHandler);
+				if (result != VK_SUCCESS) {
+					throw DSV::Helpers::Exception(result, this->m_msgFailedToCreate);
+				}
+			};
+
+			this->Destroy = [this,destroy](){
+			  	destroy(this->m_pHandler, this->m_pAllocationCallbacks);
 			};
 		}
 
@@ -58,5 +75,6 @@ namespace DSV {
 
 		template class RessourceManager<VkInstance, VkInstanceCreateInfo>;
 		template class RessourceManager<VkDebugReportCallbackEXT, VkDebugReportCallbackCreateInfoEXT>;
+		template class RessourceManager<VkDevice, VkDeviceCreateInfo>;
 	}
 }

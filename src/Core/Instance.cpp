@@ -100,6 +100,10 @@ namespace DSV {
 			}
 		}
 
+		VkPhysicalDevice Instance::GetPhysicalDevice(uint32_t index) {
+			return m_physicalDevices.at(index);
+		}
+
 		void Instance::SetPhysicalDevices() {
 			uint32_t deviceCount = 0;
 			vkEnumeratePhysicalDevices(m_pHandler, &deviceCount, nullptr);

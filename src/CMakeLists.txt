@@ -4,10 +4,11 @@ project(DSV)
 
 set(
 	SRC_FILES
-	"Core/Helpers.cpp"
+	"Helpers/Helpers.cpp"
 	"Core/RessourceManager.cpp"
 	"Core/Instance.cpp"
 	"Core/Callback.cpp"
+	"Core/LogicalDevice.cpp"
 )
 
 set(
