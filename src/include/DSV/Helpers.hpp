@@ -48,8 +48,8 @@ namespace DSV {
 		void AssertInstanceExtensionsAreAvailable(std::vector<const char *> required);
 
 		struct Exception{
-			Exception(int code, const char * msg);
-			Exception(int code, const char * msg, const char * context);
+			Exception(int code, std::string msg);
+			Exception(int code, std::string msg, std::string context);
 
 			int code;
 		
@@ -68,7 +68,17 @@ namespace DSV {
 			VkImageUsageFlags usage,
 			VkImageCreateFlags flags
 		);
+
 		std::vector<VkPhysicalDeviceMemoryProperties> GetPhysicalDeviceMemoryProperties(std::vector<VkPhysicalDevice> physicalDevices);
+		std::vector<VkQueueFamilyProperties> GetQueueFamilyProperties(VkPhysicalDevice physicalDevices);
+		std::vector< std::vector<VkQueueFamilyProperties> > GetPhysicalDevicesQueueFamilyProperties(std::vector<VkPhysicalDevice> physicalDevices);
+
+		struct QueueCreateInfo {
+			std::vector<VkDeviceQueueCreateInfo> createInfo;
+			std::vector<float> priorities;
+		};
+
+		uint32_t GetQueueFamilyIndex(uint32_t physicalDeviceIndex);
 	}
 }
 

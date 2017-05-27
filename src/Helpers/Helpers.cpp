@@ -11,8 +11,7 @@ namespace DSV {
 		const char* layerPrefix,
 		const char* msg,
 		void* userData) {
-			std::cerr << "Validation layer: " << msg << std::endl;
-			return VK_FALSE;
+			throw Exception(code, std::string("Validation layer: ") + std::string(msg), std::string(layerPrefix));
 		}
 
 		std::vector<VkLayerProperties> GetInstanceLayers() {
@@ -165,16 +164,16 @@ namespace DSV {
 			}
 		}
 	
-		Exception::Exception(int code, const char* msg) : Exception(code, msg, NULL) {}
+		Exception::Exception(int code, std::string msg) : Exception(code, msg, std::string()) {}
 	
-		Exception::Exception(int code, const char * msg, const char * context) {
+		Exception::Exception(int code, std::string msg, std::string context) {
 			this->code = code;
-			this->msg = std::string(msg);
-			if (context != NULL) {
-				this->context = std::string(context);
+			this->msg = msg;
+			if (!context.empty()) {
+				this->context = context;
 				std::cerr << "DSV: " << this->context << "\n";
 			}
-			std::cerr << this->msg << "\n";
+			std::cerr << "DSV: " << this->msg << "\n";
 		}
 
 
@@ -233,6 +232,27 @@ namespace DSV {
 				physicalDevicesMemoryProperties.push_back( physicalDeviceMemoryProperties );
 			}
 			return physicalDevicesMemoryProperties;
+		}
+
+		std::vector<VkQueueFamilyProperties> GetQueueFamilyProperties(VkPhysicalDevice physicalDevice) {
+			std::vector<VkQueueFamilyProperties> queueFamilyProperties = std::vector<VkQueueFamilyProperties>();
+			uint32_t count = 0;
+			vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &count, nullptr);
+			queueFamilyProperties.resize(count);
+			vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &count, queueFamilyProperties.data());
+			return queueFamilyProperties;
+		}
+
+		std::vector< std::vector<VkQueueFamilyProperties> > GetPhysicalDevicesQueueFamilyProperties(std::vector<VkPhysicalDevice> physicalDevices) {
+			std::vector< std::vector<VkQueueFamilyProperties> > physicalDevicesQueueFamilyProperties = std::vector< std::vector<VkQueueFamilyProperties> >();
+			for (const auto& physicalDevice : physicalDevices) {
+				physicalDevicesQueueFamilyProperties.push_back(GetQueueFamilyProperties(physicalDevice));
+			}
+		}
+
+		uint32_t GetQueueFamilyIndex(VkPhysicalDevice physicalDevice, VkQueueFlags requiredQueueFlags, uint32_t minimumRequiredQueue) {
+			std::vector<VkQueueFamilyProperties> physicalDeviceQueueFamilyProperties = GetQueueFamilyProperties(physicalDevice);
+			/* DO STUFF */
 		}
 	}
 }
