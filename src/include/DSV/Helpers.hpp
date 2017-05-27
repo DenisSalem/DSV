@@ -8,8 +8,9 @@
 
 #include "DSV/Core.hpp"
 
-#define DSV_MSG_REQUIRED_LAYERS_UNAVAILABLE "DSV: One ore more required layers are unavailable!"
-#define DSV_MSG_REQUIRED_EXTENSIONS_UNAVAILABLE "DSV: On ore more required extensions are unavailable!"
+#define DSV_MSG_REQUIRED_LAYERS_UNAVAILABLE "One ore more required layers are unavailable!"
+#define DSV_MSG_REQUIRED_EXTENSIONS_UNAVAILABLE "On ore more required extensions are unavailable!"
+#define DSV_MSG_REQUIRED_QUEUE_FAMILY_UNSUPPORTED "Required queue family unsuppoted!"
 
 
 #define DSV_CALLBACK_REPORT_ALL VK_DEBUG_REPORT_INFORMATION_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT | VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT | VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_DEBUG_BIT_EXT
@@ -48,6 +49,7 @@ namespace DSV {
 		void AssertInstanceExtensionsAreAvailable(std::vector<const char *> required);
 
 		struct Exception{
+			Exception(std::string msg);
 			Exception(int code, std::string msg);
 			Exception(int code, std::string msg, std::string context);
 

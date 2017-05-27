@@ -164,6 +164,8 @@ namespace DSV {
 			}
 		}
 	
+		Exception::Exception(std::string msg) : Exception(-1, msg, std::string()) {}
+
 		Exception::Exception(int code, std::string msg) : Exception(code, msg, std::string()) {}
 	
 		Exception::Exception(int code, std::string msg, std::string context) {
@@ -250,9 +252,16 @@ namespace DSV {
 			}
 		}
 
-		uint32_t GetQueueFamilyIndex(VkPhysicalDevice physicalDevice, VkQueueFlags requiredQueueFlags, uint32_t minimumRequiredQueue) {
+		uint32_t GetQueueFamilyIndex(VkPhysicalDevice physicalDevice, VkQueueFlags requiredQueueFlags, uint32_t minimumRequiredQueues) {
 			std::vector<VkQueueFamilyProperties> physicalDeviceQueueFamilyProperties = GetQueueFamilyProperties(physicalDevice);
-			/* DO STUFF */
+			uint32_t index = 0;
+			for (const auto& properties : physicalDeviceQueueFamilyProperties) {
+				if ( (properties.queueFlags & requiredQueueFlags) == requiredQueueFlags && properties.queueCount >= minimumRequiredQueues) {
+					return index;
+				}
+				index++;
+			}
+			throw Exception(std::string(DSV_MSG_REQUIRED_QUEUE_FAMILY_UNSUPPORTED));
 		}
 	}
 }
