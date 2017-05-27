@@ -23,12 +23,13 @@ int main(int argc, char ** argv) {
 
 		// We then create a Vulkan Instance
 		DSV::Core::Instance instance(
-			"Hello App",			// Application Name 
-			VK_MAKE_VERSION(1, 0, 0),	// Application Version
-			"No Engine",			// Engine Name
-			VK_MAKE_VERSION(1, 0, 0),	// Engine Version
-			requiredInstanceExtensions,	// Required Instance Extensions
-			requiredInstanceLayers		// Required Instance Layers
+			"Hello App",			// Application name 
+			VK_MAKE_VERSION(1, 0, 0),	// Application version
+			"No Engine",			// Engine name
+			VK_MAKE_VERSION(1, 0, 0),	// Engine version
+			VK_API_VERSION_1_0,		// Vulkan API version
+			requiredInstanceExtensions,	// Required instance extensions
+			requiredInstanceLayers		// Required instance layers
 		);
 
 		#ifdef EXAMPLE_DEBUG
@@ -37,12 +38,12 @@ int main(int argc, char ** argv) {
 		#endif
 
 		// Because it's fancy we can print out what are the available GPUs
-		DSV::Helpers::PrintNamesFrom(instance.GetPhysicalDevicesProperties(), "Available GPUs:");
+		DSV::Helpers::PrintNamesFrom(DSV::Helpers::GetPhysicalDevicesProperties(instance.GetPhysicalDevices()), "Available GPUs:");
 		
 		// Most of the time only one GPU is available, but we need to decide which one to use in case
 		// there would be more. For this example we don't really care so we just pick the first available GPU.
 		uint32_t physicalDeviceIndex = instance.PickPhysicalDevice(
-			[](std::vector<VkPhysicalDeviceProperties> properties) -> uint32_t { return 0; }
+			[](std::vector<VkPhysicalDevice> properties) -> uint32_t { return 0; }
 		);
 
 		// DSV provides an helper to get the names of availables device features.

@@ -13,7 +13,8 @@ namespace DSV {
 					const char * applicationName,
 					uint32_t applicationVersion,
 					const char * engineName,
-					uint32_t engineVersion
+					uint32_t engineVersion,
+					uint32_t apiVersion
 				);
 				
 				Instance(
@@ -21,6 +22,7 @@ namespace DSV {
 					uint32_t applicationVersion, 
 					const char * engineName, 
 					uint32_t engineVersion, 
+					uint32_t apiVersion,
 					std::vector<const char *> requiredInstanceExtensions, 
 					std::vector<const char *> requiredInstanceLayers
 				);
@@ -30,6 +32,7 @@ namespace DSV {
 					uint32_t applicationVersion,
 					const char * engineName,
 					uint32_t engineVersion,
+					uint32_t apiVersion,
 					VkAllocationCallbacks * pAllocationCallbacks
 				);
 				
@@ -38,6 +41,7 @@ namespace DSV {
 					uint32_t applicationVersion,
 					const char * engineName,
 					uint32_t engineVersion,
+					uint32_t apiVersion,
 					VkAllocationCallbacks * pAllocationCallbacks,
 					std::vector<const char *> requiredInstanceExtensions, 
 					std::vector<const char *> requiredInstanceLayers
@@ -48,8 +52,7 @@ namespace DSV {
 				uint32_t GetApplicationVersion();
 				uint32_t GetEngineVersion();
 				std::vector<VkPhysicalDevice> GetPhysicalDevices();
-				std::vector<VkPhysicalDeviceProperties> GetPhysicalDevicesProperties();
-				uint32_t PickPhysicalDevice(std::function<uint32_t(std::vector<VkPhysicalDeviceProperties>)> picker);
+				uint32_t PickPhysicalDevice(std::function<uint32_t(std::vector<VkPhysicalDevice>)> picker);
 				VkPhysicalDevice GetPhysicalDevice(uint32_t index);
 			
 			protected:

@@ -56,6 +56,19 @@ namespace DSV {
 			std::string msg;
 			std::string context;
 		};
+
+		std::vector<VkPhysicalDeviceProperties> GetPhysicalDevicesProperties(std::vector<VkPhysicalDevice> physicalDevices);
+		std::vector<VkPhysicalDeviceFeatures> GetPhysicalDevicesFeatures(std::vector<VkPhysicalDevice> physicalDevices);
+		std::vector<VkFormatProperties> GetPhysicalDevicesFormatProperties(std::vector<VkPhysicalDevice> physicalDevices, VkFormat format);
+		std::vector<VkImageFormatProperties> GetPhysicalDeviceImageFormatProperties(
+			std::vector<VkPhysicalDevice> physicalDevices,
+			VkFormat format,
+			VkImageType type,
+			VkImageTiling tiling,
+			VkImageUsageFlags usage,
+			VkImageCreateFlags flags
+		);
+		std::vector<VkPhysicalDeviceMemoryProperties> GetPhysicalDeviceMemoryProperties(std::vector<VkPhysicalDevice> physicalDevices);
 	}
 }
 

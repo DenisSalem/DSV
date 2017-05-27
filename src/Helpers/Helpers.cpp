@@ -176,5 +176,63 @@ namespace DSV {
 			}
 			std::cerr << this->msg << "\n";
 		}
+
+
+		std::vector<VkPhysicalDeviceProperties> GetPhysicalDevicesProperties(std::vector<VkPhysicalDevice> physicalDevices) {
+			std::vector<VkPhysicalDeviceProperties> physicalDevicesProperties = std::vector<VkPhysicalDeviceProperties>();
+			for (const auto& physicalDevice : physicalDevices) {
+			  	VkPhysicalDeviceProperties physicalDeviceProperties;
+				vkGetPhysicalDeviceProperties(physicalDevice, &physicalDeviceProperties);
+				physicalDevicesProperties.push_back( physicalDeviceProperties );
+			}
+			return physicalDevicesProperties;
+		}
+
+		std::vector<VkPhysicalDeviceFeatures> GetPhysicalDevicesFeatures(std::vector<VkPhysicalDevice> physicalDevices) {
+			std::vector<VkPhysicalDeviceFeatures> physicalDevicesFeatures = std::vector<VkPhysicalDeviceFeatures>();
+			for(const auto& physicalDevice : physicalDevices) {
+				VkPhysicalDeviceFeatures features = {};
+				vkGetPhysicalDeviceFeatures(physicalDevice, &features);
+				physicalDevicesFeatures.push_back(features);
+			}
+			return physicalDevicesFeatures;
+		}
+
+		std::vector<VkFormatProperties> GetPhysicalDevicesFormatProperties(std::vector<VkPhysicalDevice> physicalDevices, VkFormat format) {
+			std::vector<VkFormatProperties> physicalDevicesFormatProperties = std::vector<VkFormatProperties>();
+			for(const auto& physicalDevice : physicalDevices) {
+				VkFormatProperties physicalDeviceFormatProperties = {};
+				vkGetPhysicalDeviceFormatProperties(physicalDevice, format, &physicalDeviceFormatProperties);
+				physicalDevicesFormatProperties.push_back(physicalDeviceFormatProperties);
+			}
+			return physicalDevicesFormatProperties;
+		}
+
+		std::vector<VkImageFormatProperties> GetPhysicalDeviceImageFormatProperties(
+			std::vector<VkPhysicalDevice> physicalDevices,
+			VkFormat format,
+			VkImageType type,
+			VkImageTiling tiling,
+			VkImageUsageFlags usage,
+			VkImageCreateFlags flags
+		) {
+			std::vector<VkImageFormatProperties> physicalDevicesImageFormatProperties = std::vector<VkImageFormatProperties>();
+			for(const auto& physicalDevice : physicalDevices) {
+				VkImageFormatProperties physicalDeviceImageFormatProperties = {};
+				vkGetPhysicalDeviceImageFormatProperties(physicalDevice, format, type, tiling, usage, flags, &physicalDeviceImageFormatProperties);
+				physicalDevicesImageFormatProperties.push_back(physicalDeviceImageFormatProperties);
+			}
+			return physicalDevicesImageFormatProperties;
+		}
+
+		std::vector<VkPhysicalDeviceMemoryProperties> GetPhysicalDeviceMemoryProperties(std::vector<VkPhysicalDevice> physicalDevices) {
+			std::vector<VkPhysicalDeviceMemoryProperties> physicalDevicesMemoryProperties = std::vector<VkPhysicalDeviceMemoryProperties>();
+			for (const auto& physicalDevice : physicalDevices) {
+			  	VkPhysicalDeviceMemoryProperties physicalDeviceMemoryProperties = {};
+				vkGetPhysicalDeviceMemoryProperties(physicalDevice, &physicalDeviceMemoryProperties);
+				physicalDevicesMemoryProperties.push_back( physicalDeviceMemoryProperties );
+			}
+			return physicalDevicesMemoryProperties;
+		}
 	}
 }
