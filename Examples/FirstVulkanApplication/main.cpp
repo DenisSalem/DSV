@@ -38,6 +38,12 @@ int main(int argc, char ** argv) {
 		DSV::Core::Callback callback(instance.GetHandler(), VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT, DSV::Helpers::DefaultDebugCallback);
 		#endif
 
+		// Now we have to decide which GPU we want to use so we need to instantiate a PhysicalDeviceDefaultPicker object.
+		// This class implement SetScore() from PhysicalDevicePickerInterface. That means that one might want to implement
+		// it's own method for rating devices.
+		DSV::Helpers::PhysicalDeviceDefaultPicker physicalDevicePicker(instance.GetPhysicalDevices());
+		physicalDevicePicker.SetScore();
+
 
 
 	} catch (const DSV::Helpers::Exception& e) {
