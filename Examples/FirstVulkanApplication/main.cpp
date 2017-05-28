@@ -1,4 +1,5 @@
 #include "DSV/Core.hpp"
+#include "DSV/Helpers.hpp"
 
 #define EXAMPLE_DEBUG
 
@@ -37,24 +38,8 @@ int main(int argc, char ** argv) {
 		DSV::Core::Callback callback(instance.GetHandler(), VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT, DSV::Helpers::DefaultDebugCallback);
 		#endif
 
-		// Because it's fancy we can print out what are the available GPUs
-		DSV::Helpers::PrintNamesFrom(DSV::Helpers::GetPhysicalDevicesProperties(instance.GetPhysicalDevices()), "Available GPUs:");
-		
-		// Most of the time only one GPU is available, but we need to decide which one to use in case
-		// there would be more. For this example we don't really care so we just pick the first available GPU.
-		uint32_t physicalDeviceIndex = instance.PickPhysicalDevice(
-			[](std::vector<VkPhysicalDevice> properties) -> uint32_t { return 0; }
-		);
 
-		// DSV provides an helper to get the names of availables device features.
-		// Why don't use it to print out an overview of the GPU capabilities? :)
-		std::vector<std::string> physicalDeviceFeaturesName = DSV::Helpers::GetPhysicalDeviceFeaturesName( instance.GetPhysicalDevice(physicalDeviceIndex));
-		DSV::Helpers::PrintNamesFrom(physicalDeviceFeaturesName, "Available physical device features:");
 
-		// For this examples we don't need any particular device features so we left the below empty.
-		VkPhysicalDeviceFeatures physicalDeviceFeatures = {};
-
-		//DSV::Core::LogicalDevice(instance.GetPhysicalDevice(physicalDeviceIndex), physicalDeviceFeatures);
 	} catch (const DSV::Helpers::Exception& e) {
 		return EXIT_FAILURE;
 	}

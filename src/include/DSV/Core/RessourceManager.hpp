@@ -1,4 +1,5 @@
 #include <functional>
+#include <vector>
 
 #include "DSV/Core.hpp"
 

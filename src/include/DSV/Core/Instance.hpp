@@ -1,3 +1,5 @@
+#include <vector>
+
 #include "DSV/Core/RessourceManager.hpp"
 
 #ifndef DSV_INSTANCE

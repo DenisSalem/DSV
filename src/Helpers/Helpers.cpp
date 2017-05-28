@@ -64,7 +64,6 @@ namespace DSV {
 		template void PrintNamesFrom(std::vector<VkLayerProperties> vProperties, const char * header);
 		template void PrintNamesFrom(std::vector<VkExtensionProperties> vProperties, const char * header);
 		template void PrintNamesFrom(std::vector<VkPhysicalDeviceProperties> vProperties, const char * header);
-		template void PrintNamesFrom(std::vector<std::string> vProperties, const char * header);
 
 		std::vector<std::string> GetPhysicalDeviceFeaturesName(VkPhysicalDevice physicalDevice) {
 			std::vector<std::string> names = std::vector<std::string>();
@@ -176,92 +175,6 @@ namespace DSV {
 				std::cerr << "DSV: " << this->context << "\n";
 			}
 			std::cerr << "DSV: " << this->msg << "\n";
-		}
-
-
-		std::vector<VkPhysicalDeviceProperties> GetPhysicalDevicesProperties(std::vector<VkPhysicalDevice> physicalDevices) {
-			std::vector<VkPhysicalDeviceProperties> physicalDevicesProperties = std::vector<VkPhysicalDeviceProperties>();
-			for (const auto& physicalDevice : physicalDevices) {
-			  	VkPhysicalDeviceProperties physicalDeviceProperties;
-				vkGetPhysicalDeviceProperties(physicalDevice, &physicalDeviceProperties);
-				physicalDevicesProperties.push_back( physicalDeviceProperties );
-			}
-			return physicalDevicesProperties;
-		}
-
-		std::vector<VkPhysicalDeviceFeatures> GetPhysicalDevicesFeatures(std::vector<VkPhysicalDevice> physicalDevices) {
-			std::vector<VkPhysicalDeviceFeatures> physicalDevicesFeatures = std::vector<VkPhysicalDeviceFeatures>();
-			for(const auto& physicalDevice : physicalDevices) {
-				VkPhysicalDeviceFeatures features = {};
-				vkGetPhysicalDeviceFeatures(physicalDevice, &features);
-				physicalDevicesFeatures.push_back(features);
-			}
-			return physicalDevicesFeatures;
-		}
-
-		std::vector<VkFormatProperties> GetPhysicalDevicesFormatProperties(std::vector<VkPhysicalDevice> physicalDevices, VkFormat format) {
-			std::vector<VkFormatProperties> physicalDevicesFormatProperties = std::vector<VkFormatProperties>();
-			for(const auto& physicalDevice : physicalDevices) {
-				VkFormatProperties physicalDeviceFormatProperties = {};
-				vkGetPhysicalDeviceFormatProperties(physicalDevice, format, &physicalDeviceFormatProperties);
-				physicalDevicesFormatProperties.push_back(physicalDeviceFormatProperties);
-			}
-			return physicalDevicesFormatProperties;
-		}
-
-		std::vector<VkImageFormatProperties> GetPhysicalDeviceImageFormatProperties(
-			std::vector<VkPhysicalDevice> physicalDevices,
-			VkFormat format,
-			VkImageType type,
-			VkImageTiling tiling,
-			VkImageUsageFlags usage,
-			VkImageCreateFlags flags
-		) {
-			std::vector<VkImageFormatProperties> physicalDevicesImageFormatProperties = std::vector<VkImageFormatProperties>();
-			for(const auto& physicalDevice : physicalDevices) {
-				VkImageFormatProperties physicalDeviceImageFormatProperties = {};
-				vkGetPhysicalDeviceImageFormatProperties(physicalDevice, format, type, tiling, usage, flags, &physicalDeviceImageFormatProperties);
-				physicalDevicesImageFormatProperties.push_back(physicalDeviceImageFormatProperties);
-			}
-			return physicalDevicesImageFormatProperties;
-		}
-
-		std::vector<VkPhysicalDeviceMemoryProperties> GetPhysicalDeviceMemoryProperties(std::vector<VkPhysicalDevice> physicalDevices) {
-			std::vector<VkPhysicalDeviceMemoryProperties> physicalDevicesMemoryProperties = std::vector<VkPhysicalDeviceMemoryProperties>();
-			for (const auto& physicalDevice : physicalDevices) {
-			  	VkPhysicalDeviceMemoryProperties physicalDeviceMemoryProperties = {};
-				vkGetPhysicalDeviceMemoryProperties(physicalDevice, &physicalDeviceMemoryProperties);
-				physicalDevicesMemoryProperties.push_back( physicalDeviceMemoryProperties );
-			}
-			return physicalDevicesMemoryProperties;
-		}
-
-		std::vector<VkQueueFamilyProperties> GetQueueFamilyProperties(VkPhysicalDevice physicalDevice) {
-			std::vector<VkQueueFamilyProperties> queueFamilyProperties = std::vector<VkQueueFamilyProperties>();
-			uint32_t count = 0;
-			vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &count, nullptr);
-			queueFamilyProperties.resize(count);
-			vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &count, queueFamilyProperties.data());
-			return queueFamilyProperties;
-		}
-
-		std::vector< std::vector<VkQueueFamilyProperties> > GetPhysicalDevicesQueueFamilyProperties(std::vector<VkPhysicalDevice> physicalDevices) {
-			std::vector< std::vector<VkQueueFamilyProperties> > physicalDevicesQueueFamilyProperties = std::vector< std::vector<VkQueueFamilyProperties> >();
-			for (const auto& physicalDevice : physicalDevices) {
-				physicalDevicesQueueFamilyProperties.push_back(GetQueueFamilyProperties(physicalDevice));
-			}
-		}
-
-		uint32_t GetQueueFamilyIndex(VkPhysicalDevice physicalDevice, VkQueueFlags requiredQueueFlags, uint32_t minimumRequiredQueues) {
-			std::vector<VkQueueFamilyProperties> physicalDeviceQueueFamilyProperties = GetQueueFamilyProperties(physicalDevice);
-			uint32_t index = 0;
-			for (const auto& properties : physicalDeviceQueueFamilyProperties) {
-				if ( (properties.queueFlags & requiredQueueFlags) == requiredQueueFlags && properties.queueCount >= minimumRequiredQueues) {
-					return index;
-				}
-				index++;
-			}
-			throw Exception(std::string(DSV_MSG_REQUIRED_QUEUE_FAMILY_UNSUPPORTED));
 		}
 	}
 }

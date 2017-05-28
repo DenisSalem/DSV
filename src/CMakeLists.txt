@@ -9,6 +9,7 @@ set(
 	"Core/Instance.cpp"
 	"Core/Callback.cpp"
 	"Core/LogicalDevice.cpp"
+	"Helpers/PhysicalDevicePicker.cpp"
 )
 
 set(
