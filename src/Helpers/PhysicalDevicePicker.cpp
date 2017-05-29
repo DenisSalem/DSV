@@ -33,10 +33,11 @@ namespace DSV {
 			return physicalDeviceIndex;
 		}
 
-		void PhysicalDevicePickerInterface::FilterByPhysicalDeviceType(VkPhysicalDeviceType physicalDeviceType) {
+		void PhysicalDevicePickerInterface::FilterByPhysicalDeviceType(VkPhysicalDeviceType physicalDeviceType, bool remove) {
 			std::vector<uint32_t> toRemove = std::vector<uint32_t>();
 			for (uint32_t index =0; index < m_candidates.size(); index++) {
-				if( m_candidates.at(index).properties.deviceType != physicalDeviceType) {
+			  	bool match = m_candidates.at(index).properties.deviceType == physicalDeviceType;
+			  	if (remove == match) {
 					toRemove.push_back(index);
 				}
 			}
@@ -46,11 +47,16 @@ namespace DSV {
 		void PhysicalDevicePickerInterface::FilterByPhysicalDeviceNameSubstring(const char * substring) {
 			std::vector<uint32_t> toRemove = std::vector<uint32_t>();
 			for (uint32_t index =0; index < m_candidates.size(); index++) {
-				if( std::string(m_candidates.at(index).properties.deviceName).find(substring) == std::string::npos) {
-					toRemove.push_back(index);
+			  	bool match = std::string(m_candidates.at(index).properties.deviceName).find(substring) != std::string::npos;
+			  	if( remove == match ) {
+						toRemove.push_back(index);
 				}
 			}
 			Remove(toRemove, DSV_MSG_NO_GPU_MATCHING_REQUIRED_DEVICE_NAME);
+		}
+
+		void PhysicalDevicePickerInterface::FilterByQueueFamily(VkQueueFlags queueFlags, bool remove) {
+		
 		}
 
 		void PhysicalDevicePickerInterface::Remove(std::vector<uint32_t> toRemove, const char * error) {

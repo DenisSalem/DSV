@@ -28,15 +28,13 @@ namespace DSV {
 		  	public:
 				PhysicalDevicePickerInterface(std::vector<VkPhysicalDevice> physicalDevices);
 				uint32_t PickMostRated();
-				void FilterByPhysicalDeviceType(VkPhysicalDeviceType physicalDeviceType);
-				void FilterByPhysicalDeviceNameSubstring(const char * substring);
+				void FilterByPhysicalDeviceType(VkPhysicalDeviceType physicalDeviceType, bool remove);
+				void FilterByPhysicalDeviceNameSubstring(const char * substring, bool remove);
 				virtual void SetScore() = 0;
 
 			protected:
 				void Remove(std::vector<uint32_t> toRemove, const char * error);
 				std::vector<PhysicalDeviceCandidate> m_candidates;
-				
-
 		};
 
 		class PhysicalDeviceDefaultPicker : public PhysicalDevicePickerInterface {
