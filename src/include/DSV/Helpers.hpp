@@ -34,6 +34,8 @@ namespace DSV {
 
 		std::vector<VkLayerProperties> GetInstanceLayers();
 		std::vector<VkExtensionProperties> GetInstanceExtensions(const char * pLayerName);
+
+		std::vector<VkPhysicalDeviceProperties> GetPhysicalDevicesProperties(std::vector<VkPhysicalDevice> physicalDevices);
 	
 		std::string GetNameFromProperties(VkLayerProperties properties);
 		std::string GetNameFromProperties(VkExtensionProperties properties);

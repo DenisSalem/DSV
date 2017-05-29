@@ -6,7 +6,9 @@
 #include "DSV/Helpers.hpp"
 
 #define DSV_MSG_REQUIRED_QUEUE_FAMILY_UNSUPPORTED "Required queue family unsupported!"
-#define DSV_MSG_THERE_IS_NO_MORE_DEVICE_AVAILABLE "There is no more device available!"
+#define DSV_MSG_THERE_IS_NO_MORE_DEVICE_AVAILABLE "There is no or no more device available!"
+#define DSV_MSG_NO_GPU_MATCHING_REQUIRED_DEVICE_TYPE "There is no GPU matching required device type!"
+#define DSV_MSG_NO_GPU_MATCHING_REQUIRED_DEVICE_NAME "There is no GPU matching required device name!"
 
 #define FLAGS_MATCH(required, current) ( (current & required) == required)
 
@@ -26,9 +28,12 @@ namespace DSV {
 		  	public:
 				PhysicalDevicePickerInterface(std::vector<VkPhysicalDevice> physicalDevices);
 				uint32_t PickMostRated();
+				void FilterByPhysicalDeviceType(VkPhysicalDeviceType physicalDeviceType);
+				void FilterByPhysicalDeviceNameSubstring(const char * substring);
 				virtual void SetScore() = 0;
 
 			protected:
+				void Remove(std::vector<uint32_t> toRemove, const char * error);
 				std::vector<PhysicalDeviceCandidate> m_candidates;
 				
 
