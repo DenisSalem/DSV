@@ -44,7 +44,7 @@ namespace DSV {
 			Remove(toRemove, DSV_MSG_NO_GPU_MATCHING_REQUIRED_DEVICE_TYPE);
 		}
 
-		void PhysicalDevicePickerInterface::FilterByPhysicalDeviceNameSubstring(const char * substring) {
+		void PhysicalDevicePickerInterface::FilterByPhysicalDeviceNameSubstring(const char * substring, bool remove) {
 			std::vector<uint32_t> toRemove = std::vector<uint32_t>();
 			for (uint32_t index =0; index < m_candidates.size(); index++) {
 			  	bool match = std::string(m_candidates.at(index).properties.deviceName).find(substring) != std::string::npos;
@@ -56,7 +56,12 @@ namespace DSV {
 		}
 
 		void PhysicalDevicePickerInterface::FilterByQueueFamily(VkQueueFlags queueFlags, bool remove) {
-		
+			std::vector<uint32_t> toRemove = std::vector<uint32_t>();
+			for (uint32_t index =0; index < m_candidates.size(); index++) {
+				for (const auto& properties : m_candidates.at(index).queueFamilyProperties) {
+					
+				}
+			}
 		}
 
 		void PhysicalDevicePickerInterface::Remove(std::vector<uint32_t> toRemove, const char * error) {

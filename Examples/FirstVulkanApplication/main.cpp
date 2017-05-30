@@ -46,6 +46,7 @@ int main(int argc, char ** argv) {
 		// it's own method for rating devices.
 		DSV::Helpers::PhysicalDeviceDefaultPicker physicalDevicePicker(instance.GetPhysicalDevices());
 		physicalDevicePicker.SetScore();
+		physicalDevicePicker.FilterByPhysicalDeviceType(VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU, true);
 
 	} catch (const DSV::Helpers::Exception& e) {
 		return EXIT_FAILURE;

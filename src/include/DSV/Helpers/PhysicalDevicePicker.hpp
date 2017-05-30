@@ -30,6 +30,7 @@ namespace DSV {
 				uint32_t PickMostRated();
 				void FilterByPhysicalDeviceType(VkPhysicalDeviceType physicalDeviceType, bool remove);
 				void FilterByPhysicalDeviceNameSubstring(const char * substring, bool remove);
+				void FilterByQueueFamily(VkQueueFlags queueFlags, bool remove);
 				virtual void SetScore() = 0;
 
 			protected:
