@@ -9,7 +9,8 @@
 #define DSV_MSG_THERE_IS_NO_MORE_DEVICE_AVAILABLE "There is no or no more device available!"
 #define DSV_MSG_NO_GPU_MATCHING_REQUIRED_DEVICE_TYPE "There is no GPU matching required device type!"
 #define DSV_MSG_NO_GPU_MATCHING_REQUIRED_DEVICE_NAME "There is no GPU matching required device name!"
-
+#define DSV_MSG_NO_GPU_MATCHING_REQUIRED_QUEUE_FLAG "There is no GPU matching required queue flag!"
+#define DSV_MSG_WRONG_GIVEN_QUEUE_FLAG "Wrong given queue flag!" 
 #define FLAGS_MATCH(required, current) ( (current & required) == required)
 
 namespace DSV {
@@ -30,7 +31,7 @@ namespace DSV {
 				uint32_t PickMostRated();
 				void FilterByPhysicalDeviceType(VkPhysicalDeviceType physicalDeviceType, bool remove);
 				void FilterByPhysicalDeviceNameSubstring(const char * substring, bool remove);
-				void FilterByQueueFamily(VkQueueFlags queueFlags, bool remove);
+				void FilterByQueueFamily(VkQueueFlags queueFlag);
 				virtual void SetScore() = 0;
 
 			protected:

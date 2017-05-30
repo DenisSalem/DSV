@@ -55,13 +55,26 @@ namespace DSV {
 			Remove(toRemove, DSV_MSG_NO_GPU_MATCHING_REQUIRED_DEVICE_NAME);
 		}
 
-		void PhysicalDevicePickerInterface::FilterByQueueFamily(VkQueueFlags queueFlags, bool remove) {
+		void PhysicalDevicePickerInterface::FilterByQueueFamily(VkQueueFlags queueFlag) {
+			if (queueFlag != 1 && queueFlag != 2 && queueFlag != 4 && queueFlag != 8) {
+				throw Exception(DSV_MSG_WRONG_GIVEN_QUEUE_FLAG);
+			}
+
 			std::vector<uint32_t> toRemove = std::vector<uint32_t>();
+			bool match = false;
 			for (uint32_t index =0; index < m_candidates.size(); index++) {
+				match = false;
 				for (const auto& properties : m_candidates.at(index).queueFamilyProperties) {
-					
+					match = properties.queueFlags == queueFlag;
+					if(match) {
+					  break;
+					}
+				}
+				if (!match) {
+					toRemove.push_back(index);
 				}
 			}
+			Remove(toRemove, DSV_MSG_WRONG_GIVEN_QUEUE_FLAG);
 		}
 
 		void PhysicalDevicePickerInterface::Remove(std::vector<uint32_t> toRemove, const char * error) {
