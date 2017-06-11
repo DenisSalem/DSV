@@ -54,6 +54,16 @@ int main(int argc, char ** argv) {
 		uint32_t physicalDeviceIndex = physicalDevicePicker.PickMostRated();
 		VkPhysicalDevice physicalDevice = instance.GetPhysicalDevice(physicalDeviceIndex);
 
+		// Before creating logical device we want to manage a little bit our queue family requirements.
+		// So the application will know what to do.
+		DSV::Helpers::QueueFamilyManager queueFamilyManager(
+			physicalDevice,		// The physical device previously picked up
+			{1.0,0.5,0.2},		// Priorities for GRAPHICS queue
+			{1.0,0.5,0.2,0.1},	// Priorities for COMPUTE queue
+			{1.0,0.5},		// Priorities for TRANSFER queue
+			{0.5}			// Priorities for SPARSE BINDING queue
+		);
+
 
 	} catch (const DSV::Helpers::Exception& e) {
 		return EXIT_FAILURE;

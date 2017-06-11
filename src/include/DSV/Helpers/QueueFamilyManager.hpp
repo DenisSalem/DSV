@@ -7,14 +7,28 @@
 
 namespace DSV {
 	namespace Helpers {
+
+		typedef struct QueueFamilyStock {
+			uint32_t familyIndex;
+			uint32_t remains;
+		} QueueFamilyStock;
+
+		typedef struct QueueFamilyInUse {
+			float priority;
+			uint32_t familyIndex;
+			uint32_t index;
+		} QueueFamilyInUse;
+
 		class QueueFamilyManager {
-			QueueFamilyManager(VkPhysicalDevice physicalDevice, std::vector<float> graphic, std::vector<float> compute, std::vector<float> transfert, std::vector<float> sparse);
-			GetGraphicQueue(uint32_t index);
-			GetComputeQueue(uint32_t index);
-			GetTransfertQueue(uint32_t index);
-			GetSparseQueue(uint32_t index);
+			public:
+				QueueFamilyManager(VkPhysicalDevice physicalDevice, std::vector<float> graphic, std::vector<float> compute, std::vector<float> transfert, std::vector<float> sparse);
+
+				VkQueue GetGraphicQueue(uint32_t index);
+				VkQueue GetComputeQueue(uint32_t index);
+				VkQueue GetTransfertQueue(uint32_t index);
+				VkQueue GetSparseQueue(uint32_t index);
 		};
 	}
 }
 
-#define
+#endif

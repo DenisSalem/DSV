@@ -10,6 +10,7 @@ set(
 	"Core/Callback.cpp"
 	"Core/LogicalDevice.cpp"
 	"Helpers/PhysicalDevicePicker.cpp"
+	"Helpers/QueueFamilyManager.cpp"
 )
 
 set(

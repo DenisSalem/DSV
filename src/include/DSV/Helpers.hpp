@@ -8,6 +8,7 @@
 
 #include "DSV/Core.hpp"
 #include "DSV/Helpers/PhysicalDevicePicker.hpp"
+#include "DSV/Helpers/QueueFamilyManager.hpp"
 
 #define DSV_MSG_REQUIRED_LAYERS_UNAVAILABLE "One ore more required layers are unavailable!"
 #define DSV_MSG_REQUIRED_EXTENSIONS_UNAVAILABLE "On ore more required extensions are unavailable!"
