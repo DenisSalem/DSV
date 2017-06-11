@@ -83,15 +83,6 @@ namespace DSV {
 			return m_physicalDevices;
 		}
 
-		uint32_t Instance::PickPhysicalDevice(std::function<uint32_t(std::vector<VkPhysicalDevice>)> picker) {
-			if (m_physicalDevices.size() == 1) {
-				return 0;
-			}
-			else {
-				return picker(GetPhysicalDevices());
-			}
-		}
-
 		VkPhysicalDevice Instance::GetPhysicalDevice(uint32_t index) {
 			return m_physicalDevices.at(index);
 		}

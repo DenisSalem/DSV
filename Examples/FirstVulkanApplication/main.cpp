@@ -45,8 +45,15 @@ int main(int argc, char ** argv) {
 		// This class implement SetScore() from PhysicalDevicePickerInterface. That means that one might want to implement
 		// it's own method for rating devices.
 		DSV::Helpers::PhysicalDeviceDefaultPicker physicalDevicePicker(instance.GetPhysicalDevices());
-		physicalDevicePicker.SetScore();
 		physicalDevicePicker.FilterByPhysicalDeviceType(VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU, true);
+		physicalDevicePicker.FilterByQueueFamily(VK_QUEUE_GRAPHICS_BIT);
+		physicalDevicePicker.FilterByQueueFamily(VK_QUEUE_COMPUTE_BIT);
+		physicalDevicePicker.SetScore();
+
+		// We're grabing the actual physical device.
+		uint32_t physicalDeviceIndex = physicalDevicePicker.PickMostRated();
+		VkPhysicalDevice physicalDevice = instance.GetPhysicalDevice(physicalDeviceIndex);
+
 
 	} catch (const DSV::Helpers::Exception& e) {
 		return EXIT_FAILURE;

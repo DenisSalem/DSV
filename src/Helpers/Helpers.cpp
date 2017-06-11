@@ -47,6 +47,13 @@ namespace DSV {
 			return physicalDevicesProperties;
 		}
 		
+		std::vector<VkQueueFamilyProperties> GetQueueFamilyProperties(VkPhysicalDevice physicalDevice) {
+			uint32_t queueFamilyCount = 0;
+			vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, nullptr);
+			std::vector<VkQueueFamilyProperties> queueFamiliesProperties(queueFamilyCount);
+			vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, queueFamiliesProperties.data());
+			return queueFamiliesProperties;
+		}
 
 		std::string GetNameFromProperties(VkLayerProperties properties) {
 			return std::string(properties.layerName);

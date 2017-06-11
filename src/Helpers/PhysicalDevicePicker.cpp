@@ -9,10 +9,7 @@ namespace DSV {
 				m_candidates.at(index).handler = physicalDevices.at(index);
 				vkGetPhysicalDeviceProperties(physicalDevices.at(index), &m_candidates.at(index).properties);
 				vkGetPhysicalDeviceFeatures(physicalDevices.at(index), &m_candidates.at(index).features);
-				uint32_t queueFamilyCount = 0;
-				vkGetPhysicalDeviceQueueFamilyProperties(physicalDevices.at(index), &queueFamilyCount, nullptr);
-				m_candidates.at(index).queueFamilyProperties.resize(queueFamilyCount);
-				vkGetPhysicalDeviceQueueFamilyProperties(physicalDevices.at(index), &queueFamilyCount, m_candidates.at(index).queueFamilyProperties.data());
+				m_candidates.at(index).queueFamilyProperties = GetQueueFamilyProperties(physicalDevices.at(index));
 			}
 		}
 
