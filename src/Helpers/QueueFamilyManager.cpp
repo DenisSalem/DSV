@@ -2,8 +2,27 @@
 
 namespace DSV {
 	namespace Helpers {
-		QueueFamilyManager::QueueFamilyManager(VkPhysicalDevice physicalDevice, std::vector<float> graphic, std::vector<float> compute, std::vector<float> transfert, std::vector<float> sparse) {
-			std::vector<VkQueueFamilyProperties> queueFamilyProperties = GetQueueFamilyProperties(physicalDevice);
+		QueueFamilyManager::QueueFamilyManager(VkPhysicalDevice physicalDevice) {
+			m_physicalDevice = physicalDevice;
+			m_queueFamilyProperties = GetQueueFamilyProperties(physicalDevice);
+			
+			// Initiate stocks
+			
+			uint32_t index =0;
+			for(auto properties : m_queueFamilyProperties) {
+				QueueFamilyStock stock;
+				stock.familyIndex = index;
+				stock.remains = properties.queueCount;
+				stock.flags = properties.queueFlags;
+
+				// We're storing queue family in the reverse order so we can process the most specific ones first.
+
+				m_queueFamilyStocks.insert(m_queueFamilyStocks.begin(), stock);
+				index++;
+			}
+		}
+
+		void QueueFamilyManager::Manage(std::vector<float> graphic, std::vector<float> compute, std::vector<float> transfert, std::vector<float> sparse) {
 			std::map<int, VkQueueFlagBits, std::greater<int>> queueFamilyRequirements;
 
 			queueFamilyRequirements.insert(std::pair<int, VkQueueFlagBits>(graphic.size(), VK_QUEUE_GRAPHICS_BIT));
@@ -11,11 +30,25 @@ namespace DSV {
 			queueFamilyRequirements.insert(std::pair<int, VkQueueFlagBits>(transfert.size(), VK_QUEUE_TRANSFER_BIT));
 			queueFamilyRequirements.insert(std::pair<int, VkQueueFlagBits>(sparse.size(), VK_QUEUE_SPARSE_BINDING_BIT));
 
-			std::map<int, VkQueueFlagBits>::iterator it;
+			
 
-			for ( it = queueFamilyRequirements.begin(); it != queueFamilyRequirements.end(); it++ ) {
-    				std::cout << it->first << ':'<< it->second << "\n";
+			std::map<int, VkQueueFlagBits>::iterator it;
+			for (it = queueFamilyRequirements.begin(); it != queueFamilyRequirements.end(); it++) {
+				switch (it->second) {
+					case VK_QUEUE_SPARSE_BINDING_BIT:
+						ProcessQueues(&m_sparseQueuesInUse, VK_QUEUE_SPARSE_BINDING_BIT);
+						break;
+					case VK_QUEUE_TRANSFER_BIT:
+						break;
+					case VK_QUEUE_COMPUTE_BIT:
+						break;
+					case VK_QUEUE_GRAPHICS_BIT:
+						break;
+				}
 			}
+		}
+
+		void QueueFamilyManager::ProcessQueues(std::vector<QueueInUse> * queues, VkQueueFlagBits) {
 		}
 	}
 }
