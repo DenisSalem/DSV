@@ -5,6 +5,8 @@
 
 #include "DSV/Helpers.hpp"
 
+#define DSV_MSG_THERE_IS_NOT_ENOUGH_QUEUES_AVAILABLE "There is not enough queues available!"
+
 namespace DSV {
 	namespace Helpers {
 
@@ -30,7 +32,8 @@ namespace DSV {
 				VkQueue GetTransfertQueue(uint32_t index);
 				VkQueue GetSparseQueue(uint32_t index);
 			private:
-				void ProcessQueues(std::vector<QueueInUse> * queues, VkQueueFlagBits);
+				void ProcessQueues(std::vector<QueueInUse> * queues, VkQueueFlagBits flag, std::vector<float> priorities);
+				QueueFamilyStock * GetStockByFlag(VkQueueFlagBits flag);
 
 				VkPhysicalDevice m_physicalDevice;
 				std::vector<VkQueueFamilyProperties> m_queueFamilyProperties;

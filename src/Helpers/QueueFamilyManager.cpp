@@ -30,13 +30,11 @@ namespace DSV {
 			queueFamilyRequirements.insert(std::pair<int, VkQueueFlagBits>(transfert.size(), VK_QUEUE_TRANSFER_BIT));
 			queueFamilyRequirements.insert(std::pair<int, VkQueueFlagBits>(sparse.size(), VK_QUEUE_SPARSE_BINDING_BIT));
 
-			
-
 			std::map<int, VkQueueFlagBits>::iterator it;
 			for (it = queueFamilyRequirements.begin(); it != queueFamilyRequirements.end(); it++) {
 				switch (it->second) {
 					case VK_QUEUE_SPARSE_BINDING_BIT:
-						ProcessQueues(&m_sparseQueuesInUse, VK_QUEUE_SPARSE_BINDING_BIT);
+						ProcessQueues(&m_sparseQueuesInUse, VK_QUEUE_SPARSE_BINDING_BIT, sparse);
 						break;
 					case VK_QUEUE_TRANSFER_BIT:
 						break;
@@ -48,7 +46,26 @@ namespace DSV {
 			}
 		}
 
-		void QueueFamilyManager::ProcessQueues(std::vector<QueueInUse> * queues, VkQueueFlagBits) {
+		void QueueFamilyManager::ProcessQueues(std::vector<QueueInUse> * queues, VkQueueFlagBits flag, std::vector<float> priorities) {
+			for (auto priority : priorities) {
+				QueueFamilyStock * stock = GetStockByFlag(flag);
+				QueueInUse queue = {};
+				queue.priority = priority;
+				queue.familyIndex = stock.familyIndex;
+				queue.index = 
+				queues->push_back();
+				
+			}
+		}
+		
+		QueueFamilyStock * QueueFamilyManager::GetStockByFlag(VkQueueFlagBits flag) {
+			for (auto& stock : m_queueFamilyStocks) {
+				if(stock.remains > 0 && (stock.flags & flag != 0)) {
+				  	stock.remains--;
+					return &stock;
+				}
+			}
+			throw Exception(DSV_MSG_THERE_IS_NOT_ENOUGH_QUEUES_AVAILABLE);
 		}
 	}
 }
