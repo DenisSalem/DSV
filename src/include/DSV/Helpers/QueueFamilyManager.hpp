@@ -25,7 +25,7 @@ namespace DSV {
 		class QueueFamilyManager {
 			public:
 				QueueFamilyManager(VkPhysicalDevice physicalDevice);
-				void Manage(std::vector<float> graphic, std::vector<float> compute, std::vector<float> transfert, std::vector<float> sparse);
+				void Manage(std::vector<float> graphic, std::vector<float> compute, std::vector<float> transfer, std::vector<float> sparse);
 
 				VkQueue GetGraphicQueue(uint32_t index);
 				VkQueue GetComputeQueue(uint32_t index);
@@ -40,7 +40,7 @@ namespace DSV {
 				std::vector<QueueFamilyStock> m_queueFamilyStocks;
 				std::vector<QueueInUse> m_graphicQueuesInUse;
 				std::vector<QueueInUse> m_computeQueuesInUse;
-				std::vector<QueueInUse> m_transfertQueuesInUse;
+				std::vector<QueueInUse> m_transferQueuesInUse;
 				std::vector<QueueInUse> m_sparseQueuesInUse;
 		};
 	}

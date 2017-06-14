@@ -22,12 +22,12 @@ namespace DSV {
 			}
 		}
 
-		void QueueFamilyManager::Manage(std::vector<float> graphic, std::vector<float> compute, std::vector<float> transfert, std::vector<float> sparse) {
+		void QueueFamilyManager::Manage(std::vector<float> graphic, std::vector<float> compute, std::vector<float> transfer, std::vector<float> sparse) {
 			std::map<int, VkQueueFlagBits, std::greater<int>> queueFamilyRequirements;
 
 			queueFamilyRequirements.insert(std::pair<int, VkQueueFlagBits>(graphic.size(), VK_QUEUE_GRAPHICS_BIT));
 			queueFamilyRequirements.insert(std::pair<int, VkQueueFlagBits>(compute.size(), VK_QUEUE_COMPUTE_BIT));
-			queueFamilyRequirements.insert(std::pair<int, VkQueueFlagBits>(transfert.size(), VK_QUEUE_TRANSFER_BIT));
+			queueFamilyRequirements.insert(std::pair<int, VkQueueFlagBits>(transfer.size(), VK_QUEUE_TRANSFER_BIT));
 			queueFamilyRequirements.insert(std::pair<int, VkQueueFlagBits>(sparse.size(), VK_QUEUE_SPARSE_BINDING_BIT));
 
 			std::map<int, VkQueueFlagBits>::iterator it;
@@ -37,10 +37,13 @@ namespace DSV {
 						ProcessQueues(&m_sparseQueuesInUse, VK_QUEUE_SPARSE_BINDING_BIT, sparse);
 						break;
 					case VK_QUEUE_TRANSFER_BIT:
+						ProcessQueues(&m_transferQueuesInUse, VK_QUEUE_SPARSE_BINDING_BIT, transfer);
 						break;
 					case VK_QUEUE_COMPUTE_BIT:
+						ProcessQueues(&m_computeQueuesInUse, VK_QUEUE_SPARSE_BINDING_BIT, compute);
 						break;
 					case VK_QUEUE_GRAPHICS_BIT:
+						ProcessQueues(&m_graphicQueuesInUse, VK_QUEUE_SPARSE_BINDING_BIT, graphic);
 						break;
 				}
 			}
