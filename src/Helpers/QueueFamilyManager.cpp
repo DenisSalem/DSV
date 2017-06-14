@@ -51,10 +51,9 @@ namespace DSV {
 				QueueFamilyStock * stock = GetStockByFlag(flag);
 				QueueInUse queue = {};
 				queue.priority = priority;
-				queue.familyIndex = stock.familyIndex;
-				queue.index = 
-				queues->push_back();
-				
+				queue.familyIndex = stock->familyIndex;
+				queue.index = m_queueFamilyProperties.at(stock->familyIndex).queueCount - stock->remains - 1;
+				queues->push_back(queue);
 			}
 		}
 		
